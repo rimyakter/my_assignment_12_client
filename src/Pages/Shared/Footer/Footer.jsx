@@ -7,12 +7,8 @@ export default function Footer() {
       <div className="container mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* About Section */}
         <div>
-          <div className="flex">
-            <NavLogo></NavLogo>
-            <h2 className="text-lg text-[#E41F35]  font-bold mb-3">
-              Blood Bridge
-            </h2>
-          </div>
+          <NavLogo></NavLogo>
+
           <p className="text-sm leading-relaxed hover:text-white">
             Dedicated to saving lives through safe and reliable blood donations.
             Join us in making a difference every day.

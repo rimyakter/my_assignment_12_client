@@ -40,10 +40,8 @@ const Navbar = () => {
             {navItems}
           </ul>
         </div>
-        <div className="flex">
-          <NavLogo></NavLogo>
-          <a className="font-bold text-xl text-primary">Blood Bridge</a>
-        </div>
+
+        <NavLogo></NavLogo>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1 ">{navItems}</ul>
