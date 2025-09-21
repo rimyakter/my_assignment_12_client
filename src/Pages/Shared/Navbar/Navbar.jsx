@@ -1,14 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, NavLink } from "react-router";
 import NavLogo from "../NavLogo/NavLogo";
+import useAuth from "../../../hooks/useAuth";
+import Swal from "sweetalert2";
+import loginImg from "../../../assets/user.png";
 
 const Navbar = () => {
+  const [success, setSuccess] = useState(null);
+  const { logOut, user } = useAuth();
+
+  const handleLogOut = () => {
+    logOut()
+      .then(() => {
+        setSuccess(true);
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Your Successfully Logged Out",
+          showConfirmButton: false,
+          timer: 1000,
+        });
+      })
+      .catch(() => {
+        setSuccess(false);
+      });
+  };
   const navItems = (
     <>
       <div className="flex space-x-3">
         <NavLink to="/">Home</NavLink>
-        <NavLink to="/donation-requests">Donation-requests</NavLink>
+        <NavLink to="/all-donation-pending">AllDonationRequests</NavLink>
+
         <NavLink to="/blog">Blog</NavLink>
+        {user && (
+          <>
+            <NavLink to="/dashboard">Dashboard</NavLink>
+            {/* <NavLink to="/dashboard/My-donation-request">
+              MyDonationRequests
+            </NavLink> */}
+            {/* <NavLink to="/dashboard/create-donation-request">
+              CreateDonationRequests
+            </NavLink> */}
+          </>
+        )}
       </div>
     </>
   );
@@ -46,10 +80,47 @@ const Navbar = () => {
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1 ">{navItems}</ul>
       </div>
-      <div className="navbar-end">
-        <Link to="/login" className="btn">
-          Login
-        </Link>
+
+      <div className="navbar-end space-x-2">
+        <div className="flex flex-col items-center justify-center">
+          <div className="relative group">
+            <img
+              className="w-10 h-10 rounded-full border-2 border-base-300"
+              src={user ? user?.photoURL : loginImg}
+              alt="User"
+            />
+            {user && (
+              <div className="absolute top-full text-xs transform px-2 py-0.5 text-black bg-base-100 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                {user.displayName}
+              </div>
+            )}
+          </div>
+        </div>
+        {user ? (
+          <>
+            <div className="flex flex-col items-center">
+              <p className="text-sm">Welcome!</p>
+              <p className="text-xs">{user.displayName}</p>
+            </div>
+            <button
+              onClick={handleLogOut}
+              className="btn btn-sm bg-white text-black shadow-none"
+            >
+              LogOut
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="flex space-x-1">
+              <Link
+                to="/login"
+                className="btn btn-sm bg-white text-black shadow-none"
+              >
+                Login
+              </Link>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

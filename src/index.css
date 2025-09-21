@@ -21,3 +21,7 @@ body {
   color: #e41f35;
   border-bottom: 2px solid #e41f35;
 }
+.dashboard-nav .active {
+  color: #e41f35;
+  font-weight: 700;
+}
