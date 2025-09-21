@@ -4,6 +4,9 @@ import useAuth from "../../../hooks/useAuth";
 import { Link, useLocation, useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import axios from "axios";
+import { FaUserCircle } from "react-icons/fa";
+import { MdPhotoCamera } from "react-icons/md";
 
 const Register = () => {
   const axiosSecure = useAxiosSecure();
@@ -13,6 +16,7 @@ const Register = () => {
 
   // auth functions from custom hook
   const { createUser, setUser, updateUser } = useAuth();
+  const [avatar, setAvatar] = useState("");
 
   // states for districts & upazilas
   const [districts, setDistricts] = useState([]);
@@ -56,16 +60,26 @@ const Register = () => {
       });
   }, []);
 
-  // handle form submit
   // 🚀 Submit handler
   const onSubmit = async (data) => {
+    if (!avatar) {
+      Swal.fire({
+        position: "top-end",
+        icon: "warning",
+        title: "Please upload a profile picture",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
+
     try {
       // 1️⃣ Create Firebase Auth account
       const result = await createUser(data.email, data.password);
       const user = result.user;
 
-      // 2️⃣ Update Firebase display name
-      await updateUser({ displayName: data.name });
+      // 2️⃣ Update Firebase display name + avatar
+      await updateUser({ displayName: data.name, photoURL: avatar });
       setUser(user);
 
       // 3️⃣ Prepare user profile object
@@ -78,6 +92,8 @@ const Register = () => {
           ? selectedDistrictObj.name
           : data.district,
         upazila: data.upazila,
+        photoURL: avatar,
+        status: "active",
         createdAt: new Date(),
       };
 
@@ -105,23 +121,69 @@ const Register = () => {
     }
   };
 
+  // 📸 Handle image upload to imgbb
+  const handleImageUpload = async (e) => {
+    const image = e.target.files[0];
+    if (!image) return;
+    const formData = new FormData();
+    formData.append("image", image);
+    const imageUploadUrl = `https://api.imgbb.com/1/upload?key=${
+      import.meta.env.VITE_image_upload_key
+    }`;
+    const res = await axios.post(imageUploadUrl, formData);
+    setAvatar(res.data.data.url);
+  };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-200">
       <div className="card bg-base-100 w-full max-w-lg shadow-2xl">
         <div className="card-body">
-          <h1 className="text-3xl font-bold mb-6 text-secondary">
+          <h1 className="text-3xl font-bold mb-6 text-secondary text-center">
             Register Now!
           </h1>
 
           {/* Registration form */}
           <form onSubmit={handleSubmit(onSubmit)}>
             <fieldset className="fieldset space-y-3">
+              {/* Avatar Upload */}
+              <div className="flex flex-col items-center space-y-2">
+                <div className="relative">
+                  {avatar ? (
+                    <img
+                      src={avatar}
+                      alt="Profile Preview"
+                      className="w-24 h-24 rounded-full object-cover border-2 border-primary"
+                    />
+                  ) : (
+                    <FaUserCircle className="w-24 h-24 text-gray-400" />
+                  )}
+                  <label
+                    htmlFor="avatar-upload"
+                    className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer shadow-lg hover:bg-primary/90 transition"
+                  >
+                    <MdPhotoCamera className="w-5 h-5" />
+                  </label>
+                </div>
+
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  accept="image/*"
+                />
+
+                <p className="text-sm text-gray-500">
+                  Upload your profile picture
+                </p>
+              </div>
+
               {/* Name */}
               <label className="label">Full Name</label>
               <input
                 type="text"
                 {...register("name", { required: true })}
-                className="input w-full"
+                className="input input-bordered w-full"
                 placeholder="Your full name"
               />
               {errors.name && <p className="text-red-700">Name is required</p>}
@@ -131,7 +193,7 @@ const Register = () => {
               <input
                 type="email"
                 {...register("email", { required: true })}
-                className="input w-full"
+                className="input input-bordered w-full"
                 placeholder="Email"
               />
               {errors.email && (
@@ -200,7 +262,7 @@ const Register = () => {
               <input
                 type="password"
                 {...register("password", { required: true, minLength: 6 })}
-                className="input w-full"
+                className="input input-bordered w-full"
                 placeholder="Password"
               />
               {errors.password?.type === "required" && (
@@ -221,7 +283,7 @@ const Register = () => {
                   validate: (value) =>
                     value === password || "Passwords do not match",
                 })}
-                className="input w-full"
+                className="input input-bordered w-full"
                 placeholder="Confirm Password"
               />
               {errors.confirm_password && (
@@ -231,11 +293,16 @@ const Register = () => {
               )}
 
               {/* Submit Button */}
-              <button className="btn btn-primary mt-4">Register</button>
+              <button
+                className="btn btn-primary mt-4 w-full"
+                disabled={!avatar}
+              >
+                Register
+              </button>
             </fieldset>
 
             {/* Redirect to login */}
-            <p className="text-sm my-2">
+            <p className="text-sm my-2 text-center">
               Already have an account?
               <Link
                 className="text-primary underline font-bold ml-1"

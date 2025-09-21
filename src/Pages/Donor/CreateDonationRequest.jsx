@@ -3,10 +3,12 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import useAuth from "../../hooks/useAuth";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 import axios from "axios";
 
 export default function CreateDonationRequest() {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
   const {
     register,
@@ -18,7 +20,20 @@ export default function CreateDonationRequest() {
 
   const [districts, setDistricts] = useState([]);
   const [upazilas, setUpazilas] = useState([]);
+  const [userProfile, setUserProfile] = useState(null); // ✅ full user info
   const selectedDistrict = watch("recipientDistrict");
+
+  // ✅ fetch user profile to check status + get name
+  useEffect(() => {
+    if (user?.email) {
+      axiosSecure
+        .get(`/users/${encodeURIComponent(user.email)}`)
+        .then((res) => {
+          setUserProfile(res.data);
+        })
+        .catch((err) => console.error("Error fetching user profile:", err));
+    }
+  }, [user, axiosSecure]);
 
   useEffect(() => {
     fetch("/districts.json")
@@ -31,15 +46,19 @@ export default function CreateDonationRequest() {
   }, []);
 
   const onSubmit = async (data) => {
-    // Parse the district JSON string to get id and name
+    if (userProfile?.status !== "active") {
+      Swal.fire("Blocked", "You are not allowed to create requests!", "error");
+      return;
+    }
+
     const districtObj = JSON.parse(data.recipientDistrict);
 
     const donationRequest = {
-      requesterName: user?.displayName || "",
-      requesterEmail: user?.email || "",
+      requesterName: userProfile?.name || "Unknown User", // ✅ from DB, not Firebase
+      requesterEmail: userProfile?.email || user?.email || "",
       recipientName: data.recipientName,
-      recipientDistrict: districtObj.name, // human-readable
-      recipientDistrictId: districtObj.id, // for filtering if needed
+      recipientDistrict: districtObj.name,
+      recipientDistrictId: districtObj.id,
       recipientUpazila: data.recipientUpazila,
       hospitalName: data.hospitalName,
       fullAddress: data.fullAddress,
@@ -78,122 +97,137 @@ export default function CreateDonationRequest() {
         Create Donation Request
       </h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Requester Info */}
-        <input
-          readOnly
-          value={user?.displayName || ""}
-          className="input input-bordered w-full"
-        />
+      {/* 🚫 If blocked */}
+      {userProfile?.status === "blocked" ? (
+        <div className="alert alert-error text-white font-semibold">
+          🚫 Your account is blocked. You cannot create donation requests.
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Requester Info (read-only from DB) */}
+          <input
+            readOnly
+            value={userProfile?.name || ""}
+            className="input input-bordered w-full"
+          />
 
-        <input
-          readOnly
-          value={user?.email || ""}
-          className="input input-bordered w-full"
-        />
+          <input
+            readOnly
+            value={userProfile?.email || ""}
+            className="input input-bordered w-full"
+          />
 
-        {/* Recipient Info */}
-        <input
-          {...register("recipientName", { required: true })}
-          placeholder="Recipient Name"
-          className="input input-bordered w-full"
-        />
-        {errors.recipientName && <span className="text-red-500">Required</span>}
+          {/* Recipient Info */}
+          <input
+            {...register("recipientName", { required: true })}
+            placeholder="Recipient Name"
+            className="input input-bordered w-full"
+          />
+          {errors.recipientName && (
+            <span className="text-red-500">Required</span>
+          )}
 
-        <select
-          {...register("recipientDistrict", { required: true })}
-          className="select select-bordered w-full"
-        >
-          <option value="">Select District</option>
-          {districts.map((district) => (
-            <option
-              key={district.id}
-              value={JSON.stringify({ id: district.id, name: district.name })}
-            >
-              {district.name}
-            </option>
-          ))}
-        </select>
-        {errors.recipientDistrict && (
-          <span className="text-red-500">Required</span>
-        )}
-
-        <select
-          {...register("recipientUpazila", { required: true })}
-          className="select select-bordered w-full"
-        >
-          <option value="">Select Upazila</option>
-          {upazilas
-            .filter(
-              (u) => u.district_id === JSON.parse(selectedDistrict || "{}").id
-            )
-            .map((upazila) => (
-              <option key={upazila.id} value={upazila.name}>
-                {upazila.name}
+          <select
+            {...register("recipientDistrict", { required: true })}
+            className="select select-bordered w-full"
+          >
+            <option value="">Select District</option>
+            {districts.map((district) => (
+              <option
+                key={district.id}
+                value={JSON.stringify({ id: district.id, name: district.name })}
+              >
+                {district.name}
               </option>
             ))}
-        </select>
-        {errors.recipientUpazila && (
-          <span className="text-red-500">Required</span>
-        )}
+          </select>
+          {errors.recipientDistrict && (
+            <span className="text-red-500">Required</span>
+          )}
 
-        <input
-          {...register("hospitalName", { required: true })}
-          placeholder="Hospital Name"
-          className="input input-bordered w-full"
-        />
-        {errors.hospitalName && <span className="text-red-500">Required</span>}
+          <select
+            {...register("recipientUpazila", { required: true })}
+            className="select select-bordered w-full"
+          >
+            <option value="">Select Upazila</option>
+            {upazilas
+              .filter(
+                (u) => u.district_id === JSON.parse(selectedDistrict || "{}").id
+              )
+              .map((upazila) => (
+                <option key={upazila.id} value={upazila.name}>
+                  {upazila.name}
+                </option>
+              ))}
+          </select>
+          {errors.recipientUpazila && (
+            <span className="text-red-500">Required</span>
+          )}
 
-        <input
-          {...register("fullAddress", { required: true })}
-          placeholder="Full Address"
-          className="input input-bordered w-full"
-        />
-        {errors.fullAddress && <span className="text-red-500">Required</span>}
+          <input
+            {...register("hospitalName", { required: true })}
+            placeholder="Hospital Name"
+            className="input input-bordered w-full"
+          />
+          {errors.hospitalName && (
+            <span className="text-red-500">Required</span>
+          )}
 
-        <select
-          {...register("bloodGroup", { required: true })}
-          className="select select-bordered w-full"
-        >
-          <option value="">Select Blood Group</option>
-          <option value="A+">A+</option>
-          <option value="A-">A-</option>
-          <option value="B+">B+</option>
-          <option value="B-">B-</option>
-          <option value="AB+">AB+</option>
-          <option value="AB-">AB-</option>
-          <option value="O+">O+</option>
-          <option value="O-">O-</option>
-        </select>
-        {errors.bloodGroup && <span className="text-red-500">Required</span>}
+          <input
+            {...register("fullAddress", { required: true })}
+            placeholder="Full Address"
+            className="input input-bordered w-full"
+          />
+          {errors.fullAddress && <span className="text-red-500">Required</span>}
 
-        <input
-          type="date"
-          {...register("donationDate", { required: true })}
-          className="input input-bordered w-full"
-        />
-        {errors.donationDate && <span className="text-red-500">Required</span>}
+          <select
+            {...register("bloodGroup", { required: true })}
+            className="select select-bordered w-full"
+          >
+            <option value="">Select Blood Group</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+          {errors.bloodGroup && <span className="text-red-500">Required</span>}
 
-        <input
-          type="time"
-          {...register("donationTime", { required: true })}
-          className="input input-bordered w-full"
-        />
-        {errors.donationTime && <span className="text-red-500">Required</span>}
+          <input
+            type="date"
+            {...register("donationDate", { required: true })}
+            className="input input-bordered w-full"
+          />
+          {errors.donationDate && (
+            <span className="text-red-500">Required</span>
+          )}
 
-        <textarea
-          {...register("requestMessage", { required: true })}
-          placeholder="Why do you need blood?"
-          className="textarea textarea-bordered w-full"
-        ></textarea>
-        {errors.requestMessage && (
-          <span className="text-red-500">Required</span>
-        )}
+          <input
+            type="time"
+            {...register("donationTime", { required: true })}
+            className="input input-bordered w-full"
+          />
+          {errors.donationTime && (
+            <span className="text-red-500">Required</span>
+          )}
 
-        <button type="submit" className="btn btn-primary w-full">
-          Request
-        </button>
-      </form>
+          <textarea
+            {...register("requestMessage", { required: true })}
+            placeholder="Why do you need blood?"
+            className="textarea textarea-bordered w-full"
+          ></textarea>
+          {errors.requestMessage && (
+            <span className="text-red-500">Required</span>
+          )}
+
+          <button type="submit" className="btn btn-primary w-full">
+            Request
+          </button>
+        </form>
+      )}
     </div>
   );
 }

@@ -62,7 +62,7 @@ export const router = createBrowserRouter([
         element: <CreateDonationRequest></CreateDonationRequest>,
       },
       {
-        path: "profile",
+        path: "/dashboard/profile",
         element: <ProfilePage></ProfilePage>,
       },
     ],
