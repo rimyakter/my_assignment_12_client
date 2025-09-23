@@ -31,16 +31,10 @@ const Navbar = () => {
         <NavLink to="/">Home</NavLink>
         <NavLink to="/all-donation-pending">AllDonationRequests</NavLink>
 
-        <NavLink to="/blog">Blog</NavLink>
+        <NavLink to="/searchPage">SearchPage</NavLink>
         {user && (
           <>
             <NavLink to="/dashboard">Dashboard</NavLink>
-            {/* <NavLink to="/dashboard/My-donation-request">
-              MyDonationRequests
-            </NavLink> */}
-            {/* <NavLink to="/dashboard/create-donation-request">
-              CreateDonationRequests
-            </NavLink> */}
           </>
         )}
       </div>

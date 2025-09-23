@@ -3,13 +3,14 @@ import { useForm } from "react-hook-form";
 import useAuth from "../../../hooks/useAuth";
 import { Link, useLocation, useNavigate } from "react-router";
 import Swal from "sweetalert2";
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
+
 import axios from "axios";
 import { FaUserCircle } from "react-icons/fa";
 import { MdPhotoCamera } from "react-icons/md";
+import useAxios from "../../../hooks/useAxios";
 
 const Register = () => {
-  const axiosSecure = useAxiosSecure();
+  const axiosInstance = useAxios();
   const location = useLocation();
   const navigate = useNavigate();
   const from = location.state || "/";
@@ -94,11 +95,12 @@ const Register = () => {
         upazila: data.upazila,
         photoURL: avatar,
         status: "active",
+        role: "donor", //default role
         createdAt: new Date(),
       };
 
       // 4️⃣ Save to MongoDB (via backend) - use POST
-      await axiosSecure.post(`/users`, userInfo);
+      await axiosInstance.post(`/users`, userInfo);
 
       Swal.fire({
         position: "top-end",

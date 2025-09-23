@@ -49,9 +49,7 @@ export default function MyDonationRequests() {
   });
 
   // ✅ Filter user-specific requests
-  const myRequests = requests.filter(
-    (r) => r.requesterEmail === user?.email || r.donorEmail === user?.email
-  );
+  const myRequests = requests.filter((r) => r.requesterEmail === user?.email);
 
   const visible = myRequests.filter((r) =>
     filter === "all" ? true : r.status === filter
@@ -119,7 +117,9 @@ export default function MyDonationRequests() {
                   <td className="flex gap-1">
                     <button
                       className="btn btn-xs"
-                      onClick={() => navigate(`/donationRequests/${r._id}`)}
+                      onClick={() =>
+                        navigate(`/detailsDonationRequest/${r._id}`)
+                      }
                     >
                       View
                     </button>
@@ -129,7 +129,7 @@ export default function MyDonationRequests() {
                         <button
                           className="btn btn-xs"
                           onClick={() =>
-                            navigate(`/donationRequests/edit/${r._id}`)
+                            navigate(`/updateDonationRequest/${r._id}`)
                           }
                         >
                           Edit

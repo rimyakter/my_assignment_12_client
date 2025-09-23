@@ -54,6 +54,7 @@ export default function DashboardHome() {
   });
 
   // Handlers
+  // Handler for delete button
   const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -63,8 +64,11 @@ export default function DashboardHome() {
       confirmButtonColor: "#ef4444",
       cancelButtonColor: "#6b7280",
       confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
     }).then((result) => {
-      if (result.isConfirmed) deleteMutation.mutate(id);
+      if (result.isConfirmed) {
+        deleteMutation.mutate(id);
+      }
     });
   };
 
@@ -178,14 +182,18 @@ export default function DashboardHome() {
                         </>
                       )}
                       <button
-                        onClick={() => navigate(`/donation/${req._id}`)}
+                        onClick={() =>
+                          navigate(`/detailsDonationRequest/${req._id}`)
+                        }
                         className="btn btn-xs btn-info tooltip"
                         data-tip="View Details"
                       >
                         <FaEye />
                       </button>
                       <button
-                        onClick={() => navigate(`/donation/edit/${req._id}`)}
+                        onClick={() =>
+                          navigate(`/updateDonationRequest/${req._id}`)
+                        }
                         className="btn btn-xs btn-primary tooltip"
                         data-tip="Edit"
                       >

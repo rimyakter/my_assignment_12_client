@@ -11,6 +11,9 @@ import DashboardLayout from "../Layouts/DashboardLayout";
 import ProfilePage from "../Pages/Shared/ProfilePage";
 import AllDonationRequests from "../Pages/Home/AllDonationRequests/AllDonationRequests";
 import DashboardHome from "../Pages/Donor/DashboardHome/DashboardHome";
+import DonorSearchPage from "../Pages/DonorSearchPage/DonorSearchPage";
+import DetailsDonationRequest from "../Pages/Home/DetailsDonationRequest/DetailsDonationRequest";
+import EditDonationRequest from "../Pages/Donor/EditDonationRequest/EditDonationRequest";
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +27,26 @@ export const router = createBrowserRouter([
       {
         path: "/all-donation-pending",
         element: <AllDonationRequests></AllDonationRequests>,
+      },
+      {
+        path: "/searchPage",
+        element: <DonorSearchPage></DonorSearchPage>,
+      },
+      {
+        path: "/detailsDonationRequest/:id",
+        element: (
+          <PrivateRouter>
+            <DetailsDonationRequest></DetailsDonationRequest>
+          </PrivateRouter>
+        ),
+      },
+      {
+        path: "/updateDonationRequest/:id",
+        element: (
+          <PrivateRouter>
+            <EditDonationRequest></EditDonationRequest>
+          </PrivateRouter>
+        ),
       },
     ],
   },

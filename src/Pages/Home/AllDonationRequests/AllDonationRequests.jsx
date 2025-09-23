@@ -60,7 +60,7 @@ export default function AllDonationRequests() {
             <div className="card-actions justify-end mt-4">
               <button
                 className="btn btn-sm btn-primary"
-                onClick={() => navigate(`/donationRequests/${req._id}`)}
+                onClick={() => navigate(`/detailsDonationRequest/${req._id}`)}
               >
                 View
               </button>
