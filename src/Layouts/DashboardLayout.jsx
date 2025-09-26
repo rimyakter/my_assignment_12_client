@@ -8,11 +8,118 @@ import {
   FaListAlt,
 } from "react-icons/fa";
 import { MdSpaceDashboard } from "react-icons/md";
-import { Link, NavLink, Outlet } from "react-router";
+import { NavLink, Outlet } from "react-router";
 import NavLogo from "../Pages/Shared/NavLogo/NavLogo";
-import DashboardHome from "../Pages/Donor/DashboardHome/DashboardHome";
+import useUserRole from "../hooks/useUserRole"; // adjust path
 
 const DashboardLayout = () => {
+  const { role, loading } = useUserRole();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+    );
+  }
+
+  // Common links
+  const commonLinks = (
+    <>
+      <li>
+        <NavLink
+          to="/dashboard"
+          className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
+        >
+          <FaTachometerAlt /> Home
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/dashboard/profile"
+          className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
+        >
+          <FaUser /> Profile
+        </NavLink>
+      </li>
+    </>
+  );
+
+  // Donor links
+  const donorLinks = (
+    <>
+      <li>
+        <NavLink
+          to="/dashboard/My-donation-request"
+          className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
+        >
+          <FaListAlt /> My Donation Requests
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/dashboard/create-donation-request"
+          className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
+        >
+          <FaHandHoldingHeart /> Create Donation Request
+        </NavLink>
+      </li>
+    </>
+  );
+
+  // Admin links
+  const adminLinks = (
+    <>
+      <li>
+        <NavLink
+          to="/dashboard/all-users"
+          className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
+        >
+          <FaUser /> All Users
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/dashboard/all-blood-donation-request"
+          className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
+        >
+          <FaHandHoldingHeart /> All Blood Donation Requests
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/dashboard/content-management"
+          className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
+        >
+          <FaCog /> Content Management
+        </NavLink>
+      </li>
+    </>
+  );
+
+  // Volunteer links (currently same as admin, but separated for future)
+  const volunteerLinks = (
+    <>
+      <li>
+        <NavLink
+          to="/dashboard/all-blood-donation-request"
+          className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
+        >
+          <FaHandHoldingHeart /> All Blood Donation Requests
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/dashboard/content-management"
+          className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
+        >
+          <FaCog /> Content Management
+        </NavLink>
+      </li>
+      {/* Add volunteer-only links here in the future */}
+    </>
+  );
+
   return (
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
@@ -51,8 +158,7 @@ const DashboardLayout = () => {
         </div>
 
         {/* Page content */}
-
-        <Outlet></Outlet>
+        <Outlet />
       </div>
 
       {/* Sidebar */}
@@ -60,39 +166,16 @@ const DashboardLayout = () => {
         <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
 
         <ul className="menu bg-base-200 text-base-content min-h-full w-72 p-4 space-y-2">
-          <NavLogo></NavLogo>
-          <li>
-            <NavLink
-              to="/dashboard"
-              className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
-            >
-              <FaTachometerAlt /> Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/dashboard/profile"
-              className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
-            >
-              <FaUser /> Profile
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/dashboard/My-donation-request"
-              className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
-            >
-              <FaListAlt /> My-Donation-Requests
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/dashboard/create-donation-request"
-              className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
-            >
-              <FaHandHoldingHeart /> Create-Donation-Request
-            </NavLink>
-          </li>
+          <NavLogo />
+
+          {/* Common Links */}
+          {commonLinks}
+
+          {/* Role-based Links */}
+          {role === "donor" && donorLinks}
+          {role === "admin" && adminLinks}
+          {role === "volunteer" && volunteerLinks}
+
           <li className="mt-auto">
             <a className="flex items-center gap-3 text-error hover:bg-error/20 rounded-lg">
               <FaSignOutAlt /> Logout

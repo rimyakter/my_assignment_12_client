@@ -30,6 +30,7 @@ const Navbar = () => {
       <div className="flex space-x-3">
         <NavLink to="/">Home</NavLink>
         <NavLink to="/all-donation-pending">AllDonationRequests</NavLink>
+        <NavLink to="/blogs">Blogs</NavLink>
 
         <NavLink to="/searchPage">SearchPage</NavLink>
         {user && (

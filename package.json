@@ -15,6 +15,8 @@
     "axios": "^1.12.2",
     "firebase": "^12.2.1",
     "firebase-admin": "^13.5.0",
+    "jodit": "^4.6.12",
+    "jodit-react": "^5.2.25",
     "jsonwebtoken": "^9.0.2",
     "lottie-react": "^2.4.1",
     "react": "^19.1.1",

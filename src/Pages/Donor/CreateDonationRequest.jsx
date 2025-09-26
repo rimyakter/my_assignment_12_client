@@ -4,7 +4,6 @@ import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import useAuth from "../../hooks/useAuth";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
-import axios from "axios";
 
 export default function CreateDonationRequest() {
   const { user } = useAuth();
@@ -71,10 +70,7 @@ export default function CreateDonationRequest() {
     };
 
     try {
-      const res = await axios.post(
-        "http://localhost:3000/donationRequests",
-        donationRequest
-      );
+      const res = await axiosSecure.post("/donationRequests", donationRequest);
 
       if (res.status === 201) {
         Swal.fire(

@@ -14,6 +14,14 @@ import DashboardHome from "../Pages/Donor/DashboardHome/DashboardHome";
 import DonorSearchPage from "../Pages/DonorSearchPage/DonorSearchPage";
 import DetailsDonationRequest from "../Pages/Home/DetailsDonationRequest/DetailsDonationRequest";
 import EditDonationRequest from "../Pages/Donor/EditDonationRequest/EditDonationRequest";
+import AllUsersPage from "../Pages/Admin/AllUsersPage";
+import AllBloodDonationRequests from "../Pages/Admin/AllBloodDonationRequests";
+import ContentManagement from "../Pages/Admin/ContentManagement";
+import AddBlog from "../Pages/Admin/AddBlogPage";
+import BlogListPage from "../Pages/BlogList/BlogListPage";
+import ForbiddenPage from "../Pages/Forbidden/ForbiddenPage";
+import AdminRoutes from "./AdminRoutes";
+import MainDashboardHome from "../Pages/Home/MainDashboardHome";
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +33,10 @@ export const router = createBrowserRouter([
         element: <Home></Home>,
       },
       {
+        path: "/forbidden",
+        element: <ForbiddenPage></ForbiddenPage>,
+      },
+      {
         path: "/all-donation-pending",
         element: <AllDonationRequests></AllDonationRequests>,
       },
@@ -32,6 +44,11 @@ export const router = createBrowserRouter([
         path: "/searchPage",
         element: <DonorSearchPage></DonorSearchPage>,
       },
+      {
+        path: "/blogs",
+        element: <BlogListPage></BlogListPage>,
+      },
+
       {
         path: "/detailsDonationRequest/:id",
         element: (
@@ -73,8 +90,8 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/dashboard",
-        element: <DashboardHome></DashboardHome>,
+        index: true,
+        element: <MainDashboardHome></MainDashboardHome>,
       },
       {
         path: "/dashboard/My-donation-request",
@@ -87,6 +104,26 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard/profile",
         element: <ProfilePage></ProfilePage>,
+      },
+      {
+        path: "/dashboard/all-users",
+        element: (
+          <AdminRoutes>
+            <AllUsersPage></AllUsersPage>
+          </AdminRoutes>
+        ),
+      },
+      {
+        path: "/dashboard/all-blood-donation-request",
+        element: <AllBloodDonationRequests></AllBloodDonationRequests>,
+      },
+      {
+        path: "/dashboard/content-management",
+        element: <ContentManagement></ContentManagement>,
+      },
+      {
+        path: "/dashboard/content-management/add-blog",
+        element: <AddBlog></AddBlog>,
       },
     ],
   },
