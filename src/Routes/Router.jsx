@@ -22,6 +22,7 @@ import BlogListPage from "../Pages/BlogList/BlogListPage";
 import ForbiddenPage from "../Pages/Forbidden/ForbiddenPage";
 import AdminRoutes from "./AdminRoutes";
 import MainDashboardHome from "../Pages/Home/MainDashboardHome";
+import BlogDetails from "../Pages/BlogList/BlogDetails";
 
 export const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
       {
         path: "/blogs",
         element: <BlogListPage></BlogListPage>,
+      },
+      {
+        path: "/blogs/:id",
+        element: <BlogDetails></BlogDetails>,
       },
 
       {
