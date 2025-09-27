@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useLocation } from "react-router";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 export default function EditDonationRequest() {
+  const location = useLocation();
   const { id } = useParams();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ export default function EditDonationRequest() {
     try {
       await axiosSecure.put(`/donationRequests/${id}`, formData);
       Swal.fire("Success", "Donation request updated!", "success");
-      navigate("/dashboard/My-donation-request");
+      navigate(location.state?.from || "/dashboard/My-donation-request");
     } catch (err) {
       console.error(err);
       Swal.fire(

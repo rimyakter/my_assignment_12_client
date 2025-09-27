@@ -1,19 +1,18 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useUserRole from "../../hooks/useUserRole";
 import Swal from "sweetalert2";
 
 export default function AllBloodDonationRequests() {
+  const location = useLocation();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { role, loading: roleLoading } = useUserRole();
-  console.log(role);
 
   const [filter, setFilter] = useState("all");
-  const [confirmId, setConfirmId] = useState(null);
 
   // ✅ Fetch all donation requests
   const {
@@ -36,14 +35,12 @@ export default function AllBloodDonationRequests() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["allDonationRequests"]);
-      setConfirmId(null);
     },
   });
 
   // ✅ Update status mutation
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }) => {
-      // Single endpoint for admin/volunteer
       const url = `/donationRequests/${id}/status/admin`;
       await axiosSecure.patch(url, { status });
     },
@@ -51,6 +48,31 @@ export default function AllBloodDonationRequests() {
       queryClient.invalidateQueries(["allDonationRequests"]);
     },
   });
+
+  // ✅ SweetAlert for delete
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteMutation.mutate(id, {
+          onSuccess: () => {
+            Swal.fire("Deleted!", "The request has been deleted.", "success");
+          },
+          onError: () => {
+            Swal.fire("Error!", "Failed to delete the request.", "error");
+          },
+        });
+      }
+    });
+  };
+
   // ✅ Apply filter
   const visible =
     filter === "all" ? requests : requests.filter((r) => r.status === filter);
@@ -142,16 +164,19 @@ export default function AllBloodDonationRequests() {
                     {role === "admin" && (
                       <>
                         <button
+                          type="button"
                           className="btn btn-xs"
                           onClick={() =>
-                            navigate(`/updateDonationRequest/${r._id}`)
+                            navigate(`/updateDonationRequest/${r._id}`, {
+                              state: { from: location.pathname },
+                            })
                           }
                         >
                           Edit
                         </button>
                         <button
                           className="btn btn-xs btn-error"
-                          onClick={() => setConfirmId(r._id)}
+                          onClick={() => handleDelete(r._id)}
                         >
                           Delete
                         </button>
@@ -161,10 +186,25 @@ export default function AllBloodDonationRequests() {
                             <button
                               className="btn btn-xs btn-success"
                               onClick={() =>
-                                updateStatusMutation.mutate({
-                                  id: r._id,
-                                  status: "done",
-                                })
+                                updateStatusMutation.mutate(
+                                  { id: r._id, status: "done" },
+                                  {
+                                    onSuccess: () => {
+                                      Swal.fire(
+                                        "Updated!",
+                                        "The request status is now Done.",
+                                        "success"
+                                      );
+                                    },
+                                    onError: () => {
+                                      Swal.fire(
+                                        "Error!",
+                                        "Failed to update status.",
+                                        "error"
+                                      );
+                                    },
+                                  }
+                                )
                               }
                             >
                               Done
@@ -172,10 +212,25 @@ export default function AllBloodDonationRequests() {
                             <button
                               className="btn btn-xs btn-warning"
                               onClick={() =>
-                                updateStatusMutation.mutate({
-                                  id: r._id,
-                                  status: "canceled",
-                                })
+                                updateStatusMutation.mutate(
+                                  { id: r._id, status: "canceled" },
+                                  {
+                                    onSuccess: () => {
+                                      Swal.fire(
+                                        "Updated!",
+                                        "The request status is now Canceled.",
+                                        "success"
+                                      );
+                                    },
+                                    onError: () => {
+                                      Swal.fire(
+                                        "Error!",
+                                        "Failed to update status.",
+                                        "error"
+                                      );
+                                    },
+                                  }
+                                )
                               }
                             >
                               Cancel
@@ -229,27 +284,6 @@ export default function AllBloodDonationRequests() {
               ))}
             </tbody>
           </table>
-        </div>
-      )}
-
-      {/* Confirmation Modal (admin only) */}
-      {role === "admin" && (
-        <div className={`modal ${confirmId ? "modal-open" : ""}`}>
-          <div className="modal-box">
-            <h3 className="font-bold">Delete this request?</h3>
-            <div className="modal-action">
-              <button className="btn" onClick={() => setConfirmId(null)}>
-                Cancel
-              </button>
-              <button
-                className="btn btn-error"
-                onClick={() => deleteMutation.mutate(confirmId)}
-                disabled={deleteMutation.isLoading}
-              >
-                {deleteMutation.isLoading ? "Deleting..." : "Delete"}
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>
