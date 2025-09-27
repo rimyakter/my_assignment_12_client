@@ -3,12 +3,17 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAuth from "../../hooks/useAuth";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import ReactPaginate from "react-paginate";
 
 const AllUsersPage = () => {
   const { user } = useAuth(); // logged in admin
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState("all");
+
+  // ✅ Pagination states
+  const [currentPage, setCurrentPage] = useState(0);
+  const usersPerPage = 3;
 
   // ✅ Fetch users
   const {
@@ -51,6 +56,15 @@ const AllUsersPage = () => {
   const filteredUsers =
     filter === "all" ? users : users.filter((u) => u.status === filter);
 
+  // ✅ Pagination logic
+  const offset = currentPage * usersPerPage;
+  const currentUsers = filteredUsers.slice(offset, offset + usersPerPage);
+  const pageCount = Math.ceil(filteredUsers.length / usersPerPage);
+
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
   if (isLoading) return <p className="p-6">Loading users...</p>;
   if (isError) return <p className="p-6 text-red-500">Failed to load users.</p>;
 
@@ -63,7 +77,10 @@ const AllUsersPage = () => {
         {["all", "active", "blocked"].map((f) => (
           <button
             key={f}
-            onClick={() => setFilter(f)}
+            onClick={() => {
+              setFilter(f);
+              setCurrentPage(0); // reset page when filter changes
+            }}
             className={`btn btn-sm capitalize ${
               filter === f ? "btn-primary" : "btn-outline"
             }`}
@@ -74,7 +91,7 @@ const AllUsersPage = () => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-base-200 shadow-md rounded-lg pt-4 pb-10">
+      <div className="overflow-x-auto bg-base-200 shadow-md rounded-lg pt-4 pb-6">
         <table className="table w-full ">
           <thead>
             <tr>
@@ -87,7 +104,7 @@ const AllUsersPage = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredUsers.map((u) => (
+            {currentUsers.map((u) => (
               <tr key={u._id}>
                 <td>
                   <div className="avatar">
@@ -170,7 +187,7 @@ const AllUsersPage = () => {
                 </td>
               </tr>
             ))}
-            {filteredUsers.length === 0 && (
+            {currentUsers.length === 0 && (
               <tr>
                 <td colSpan="6" className="text-center py-4 text-gray-500">
                   No users found.
@@ -179,6 +196,25 @@ const AllUsersPage = () => {
             )}
           </tbody>
         </table>
+
+        {/* ✅ Pagination Component */}
+        {pageCount > 1 && (
+          <div className="flex justify-center mt-6">
+            <ReactPaginate
+              previousLabel={"← Previous"}
+              nextLabel={"Next →"}
+              breakLabel={"..."}
+              pageCount={pageCount}
+              onPageChange={handlePageClick}
+              containerClassName={"flex gap-2"}
+              pageClassName={"btn btn-sm"}
+              previousClassName={"btn btn-sm"}
+              nextClassName={"btn btn-sm"}
+              activeClassName={"btn-primary"}
+              disabledClassName={"btn-disabled"}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

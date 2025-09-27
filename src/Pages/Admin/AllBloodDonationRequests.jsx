@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useUserRole from "../../hooks/useUserRole";
 import Swal from "sweetalert2";
+import ReactPaginate from "react-paginate";
 
 export default function AllBloodDonationRequests() {
   const location = useLocation();
@@ -13,6 +14,8 @@ export default function AllBloodDonationRequests() {
   const { role, loading: roleLoading } = useUserRole();
 
   const [filter, setFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 3; // ✅ adjust as needed
 
   // ✅ Fetch all donation requests
   const {
@@ -74,8 +77,17 @@ export default function AllBloodDonationRequests() {
   };
 
   // ✅ Apply filter
-  const visible =
+  const filtered =
     filter === "all" ? requests : requests.filter((r) => r.status === filter);
+
+  // ✅ Pagination
+  const pageCount = Math.ceil(filtered.length / itemsPerPage);
+  const offset = currentPage * itemsPerPage;
+  const currentItems = filtered.slice(offset, offset + itemsPerPage);
+
+  const handlePageClick = (event) => {
+    setCurrentPage(event.selected);
+  };
 
   if (roleLoading) {
     return (
@@ -92,7 +104,10 @@ export default function AllBloodDonationRequests() {
         <select
           className="select select-bordered select-sm"
           value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+          onChange={(e) => {
+            setFilter(e.target.value);
+            setCurrentPage(0); // reset to first page when filter changes
+          }}
         >
           <option value="all">All</option>
           <option value="pending">Pending</option>
@@ -106,185 +121,205 @@ export default function AllBloodDonationRequests() {
         <p>Loading...</p>
       ) : isError ? (
         <p className="text-error">Error: {error.message}</p>
-      ) : visible.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <p>No requests found.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="table w-full">
-            <thead>
-              <tr>
-                <th>Recipient</th>
-                <th>Requester</th>
-                <th>Location</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Blood</th>
-                <th>Status</th>
-                <th>Donor</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visible.map((r) => (
-                <tr key={r._id}>
-                  <td>{r.recipientName}</td>
-                  <td>
-                    {r.requesterName} <br />
-                    <span className="text-xs">{r.requesterEmail}</span>
-                  </td>
-                  <td>
-                    {r.recipientDistrict}, {r.recipientUpazila}
-                  </td>
-                  <td>{r.donationDate || "-"}</td>
-                  <td>{r.donationTime || "-"}</td>
-                  <td>{r.bloodGroup}</td>
-                  <td>{r.status}</td>
-                  <td>
-                    {r.status === "inprogress" ? (
-                      <>
-                        {r.donorName} <br />
-                        <span className="text-xs">{r.donorEmail}</span>
-                      </>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td className="flex flex-wrap gap-1">
-                    {/* View button for all roles */}
-                    <button
-                      className="btn btn-xs"
-                      onClick={() =>
-                        navigate(`/detailsDonationRequest/${r._id}`)
-                      }
-                    >
-                      View
-                    </button>
-
-                    {/* Admin-only actions */}
-                    {role === "admin" && (
-                      <>
-                        <button
-                          type="button"
-                          className="btn btn-xs"
-                          onClick={() =>
-                            navigate(`/updateDonationRequest/${r._id}`, {
-                              state: { from: location.pathname },
-                            })
-                          }
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="btn btn-xs btn-error"
-                          onClick={() => handleDelete(r._id)}
-                        >
-                          Delete
-                        </button>
-
-                        {r.status === "inprogress" && (
-                          <>
-                            <button
-                              className="btn btn-xs btn-success"
-                              onClick={() =>
-                                updateStatusMutation.mutate(
-                                  { id: r._id, status: "done" },
-                                  {
-                                    onSuccess: () => {
-                                      Swal.fire(
-                                        "Updated!",
-                                        "The request status is now Done.",
-                                        "success"
-                                      );
-                                    },
-                                    onError: () => {
-                                      Swal.fire(
-                                        "Error!",
-                                        "Failed to update status.",
-                                        "error"
-                                      );
-                                    },
-                                  }
-                                )
-                              }
-                            >
-                              Done
-                            </button>
-                            <button
-                              className="btn btn-xs btn-warning"
-                              onClick={() =>
-                                updateStatusMutation.mutate(
-                                  { id: r._id, status: "canceled" },
-                                  {
-                                    onSuccess: () => {
-                                      Swal.fire(
-                                        "Updated!",
-                                        "The request status is now Canceled.",
-                                        "success"
-                                      );
-                                    },
-                                    onError: () => {
-                                      Swal.fire(
-                                        "Error!",
-                                        "Failed to update status.",
-                                        "error"
-                                      );
-                                    },
-                                  }
-                                )
-                              }
-                            >
-                              Cancel
-                            </button>
-                          </>
-                        )}
-                      </>
-                    )}
-
-                    {/* Volunteer-only action: pending -> inprogress */}
-                    {role === "volunteer" && r.status === "pending" && (
-                      <button
-                        className="btn btn-xs btn-primary"
-                        onClick={() => {
-                          Swal.fire({
-                            title: "Mark this request as In Progress?",
-                            icon: "question",
-                            showCancelButton: true,
-                            confirmButtonText: "Yes, mark it",
-                            cancelButtonText: "Cancel",
-                          }).then((result) => {
-                            if (result.isConfirmed) {
-                              updateStatusMutation.mutate(
-                                { id: r._id, status: "inprogress" },
-                                {
-                                  onSuccess: () => {
-                                    Swal.fire(
-                                      "Updated!",
-                                      "The request is now In Progress.",
-                                      "success"
-                                    );
-                                  },
-                                  onError: () => {
-                                    Swal.fire(
-                                      "Error!",
-                                      "Failed to update status.",
-                                      "error"
-                                    );
-                                  },
-                                }
-                              );
-                            }
-                          });
-                        }}
-                      >
-                        Mark In Progress
-                      </button>
-                    )}
-                  </td>
+        <>
+          <div className="overflow-x-auto">
+            <table className="table w-full">
+              <thead>
+                <tr>
+                  <th>Recipient</th>
+                  <th>Requester</th>
+                  <th>Location</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Blood</th>
+                  <th>Status</th>
+                  <th>Donor</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {currentItems.map((r) => (
+                  <tr key={r._id}>
+                    <td>{r.recipientName}</td>
+                    <td>
+                      {r.requesterName} <br />
+                      <span className="text-xs">{r.requesterEmail}</span>
+                    </td>
+                    <td>
+                      {r.recipientDistrict}, {r.recipientUpazila}
+                    </td>
+                    <td>{r.donationDate || "-"}</td>
+                    <td>{r.donationTime || "-"}</td>
+                    <td>{r.bloodGroup}</td>
+                    <td>{r.status}</td>
+                    <td>
+                      {r.status === "inprogress" ? (
+                        <>
+                          {r.donorName} <br />
+                          <span className="text-xs">{r.donorEmail}</span>
+                        </>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td className="flex flex-wrap gap-1">
+                      {/* View button for all roles */}
+                      <button
+                        className="btn btn-xs"
+                        onClick={() =>
+                          navigate(`/detailsDonationRequest/${r._id}`)
+                        }
+                      >
+                        View
+                      </button>
+
+                      {/* Admin-only actions */}
+                      {role === "admin" && (
+                        <>
+                          <button
+                            type="button"
+                            className="btn btn-xs"
+                            onClick={() =>
+                              navigate(`/updateDonationRequest/${r._id}`, {
+                                state: { from: location.pathname },
+                              })
+                            }
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="btn btn-xs btn-error"
+                            onClick={() => handleDelete(r._id)}
+                          >
+                            Delete
+                          </button>
+
+                          {r.status === "inprogress" && (
+                            <>
+                              <button
+                                className="btn btn-xs btn-success"
+                                onClick={() =>
+                                  updateStatusMutation.mutate(
+                                    { id: r._id, status: "done" },
+                                    {
+                                      onSuccess: () => {
+                                        Swal.fire(
+                                          "Updated!",
+                                          "The request status is now Done.",
+                                          "success"
+                                        );
+                                      },
+                                      onError: () => {
+                                        Swal.fire(
+                                          "Error!",
+                                          "Failed to update status.",
+                                          "error"
+                                        );
+                                      },
+                                    }
+                                  )
+                                }
+                              >
+                                Done
+                              </button>
+                              <button
+                                className="btn btn-xs btn-warning"
+                                onClick={() =>
+                                  updateStatusMutation.mutate(
+                                    { id: r._id, status: "canceled" },
+                                    {
+                                      onSuccess: () => {
+                                        Swal.fire(
+                                          "Updated!",
+                                          "The request status is now Canceled.",
+                                          "success"
+                                        );
+                                      },
+                                      onError: () => {
+                                        Swal.fire(
+                                          "Error!",
+                                          "Failed to update status.",
+                                          "error"
+                                        );
+                                      },
+                                    }
+                                  )
+                                }
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          )}
+                        </>
+                      )}
+
+                      {/* Volunteer-only action */}
+                      {role === "volunteer" && r.status === "pending" && (
+                        <button
+                          className="btn btn-xs btn-primary"
+                          onClick={() => {
+                            Swal.fire({
+                              title: "Mark this request as In Progress?",
+                              icon: "question",
+                              showCancelButton: true,
+                              confirmButtonText: "Yes, mark it",
+                              cancelButtonText: "Cancel",
+                            }).then((result) => {
+                              if (result.isConfirmed) {
+                                updateStatusMutation.mutate(
+                                  { id: r._id, status: "inprogress" },
+                                  {
+                                    onSuccess: () => {
+                                      Swal.fire(
+                                        "Updated!",
+                                        "The request is now In Progress.",
+                                        "success"
+                                      );
+                                    },
+                                    onError: () => {
+                                      Swal.fire(
+                                        "Error!",
+                                        "Failed to update status.",
+                                        "error"
+                                      );
+                                    },
+                                  }
+                                );
+                              }
+                            });
+                          }}
+                        >
+                          Mark In Progress
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* ✅ React Paginate Component */}
+          <div className="flex justify-center mt-4">
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel=">"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={3}
+              marginPagesDisplayed={2}
+              pageCount={pageCount}
+              previousLabel="<"
+              containerClassName="join"
+              pageClassName="join-item btn btn-sm"
+              previousClassName="join-item btn btn-sm"
+              nextClassName="join-item btn btn-sm"
+              activeClassName="btn-active"
+            />
+          </div>
+        </>
       )}
     </div>
   );
