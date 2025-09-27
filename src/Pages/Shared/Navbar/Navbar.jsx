@@ -16,7 +16,7 @@ const Navbar = () => {
         Swal.fire({
           position: "top-end",
           icon: "success",
-          title: "Your Successfully Logged Out",
+          title: "Successfully Logged Out",
           showConfirmButton: false,
           timer: 1000,
         });
@@ -25,24 +25,19 @@ const Navbar = () => {
         setSuccess(false);
       });
   };
-  const navItems = (
-    <>
-      <div className="flex space-x-3">
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/all-donation-pending">AllDonationRequests</NavLink>
-        <NavLink to="/blogs">Blogs</NavLink>
 
-        <NavLink to="/searchPage">SearchPage</NavLink>
-        {user && (
-          <>
-            <NavLink to="/dashboard">Dashboard</NavLink>
-          </>
-        )}
-      </div>
-    </>
+  const navItems = (
+    <div className="flex space-x-3">
+      <NavLink to="/">Home</NavLink>
+      <NavLink to="/all-donation-pending">AllDonationRequests</NavLink>
+      <NavLink to="/blogs">Blogs</NavLink>
+      <NavLink to="/searchPage">SearchPage</NavLink>
+    </div>
   );
+
   return (
     <div className="navbar bg-base-100">
+      {/* Left side (Logo + Mobile Menu) */}
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -53,13 +48,12 @@ const Navbar = () => {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              {" "}
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
                 d="M4 6h16M4 12h8m-8 6h16"
-              />{" "}
+              />
             </svg>
           </div>
           <ul
@@ -69,52 +63,46 @@ const Navbar = () => {
             {navItems}
           </ul>
         </div>
-
-        <NavLogo></NavLogo>
+        <NavLogo />
       </div>
+
+      {/* Center (Navigation Links for Desktop) */}
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1 ">{navItems}</ul>
+        <ul className="menu menu-horizontal px-1">{navItems}</ul>
       </div>
 
-      <div className="navbar-end space-x-2">
-        <div className="flex flex-col items-center justify-center">
-          <div className="relative group">
-            <img
-              className="w-10 h-10 rounded-full border-2 border-base-300"
-              src={user ? user?.photoURL : loginImg}
-              alt="User"
-            />
-            {user && (
-              <div className="absolute top-full text-xs transform px-2 py-0.5 text-black bg-base-100 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                {user.displayName}
-              </div>
-            )}
-          </div>
-        </div>
+      {/* Right side (User Avatar / Login) */}
+      <div className="navbar-end">
         {user ? (
-          <>
-            <div className="flex flex-col items-center">
-              <p className="text-sm">Welcome!</p>
-              <p className="text-xs">{user.displayName}</p>
-            </div>
-            <button
-              onClick={handleLogOut}
-              className="btn btn-sm bg-white text-black shadow-none"
+          <div className="dropdown dropdown-end">
+            <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+              <div className="w-10 rounded-full">
+                <img src={user?.photoURL || loginImg} alt="User Avatar" />
+              </div>
+            </label>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-48"
             >
-              LogOut
-            </button>
-          </>
+              <li className="px-2 py-1 text-sm font-semibold text-primary">
+                <span className="text-lg">Welcome! </span>
+                {user.displayName || "User"}
+              </li>
+              <li>
+                <Link to="/dashboard">Dashboard</Link>
+              </li>
+              <li>
+                <button onClick={handleLogOut}>Logout</button>
+              </li>
+            </ul>
+          </div>
         ) : (
-          <>
-            <div className="flex space-x-1">
-              <Link
-                to="/login"
-                className="btn btn-sm bg-white text-black shadow-none"
-              >
-                Login
-              </Link>
-            </div>
-          </>
+          <Link
+            to="/login"
+            className="btn btn-sm bg-white text-black shadow-none"
+          >
+            Login
+          </Link>
         )}
       </div>
     </div>
