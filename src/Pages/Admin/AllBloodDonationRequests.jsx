@@ -2,16 +2,20 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useUserRole from "../../hooks/useUserRole";
+import Swal from "sweetalert2";
 
 export default function AllBloodDonationRequests() {
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { role, loading: roleLoading } = useUserRole();
+  console.log(role);
 
   const [filter, setFilter] = useState("all");
   const [confirmId, setConfirmId] = useState(null);
 
-  // ✅ Fetch all donation requests (admin privilege)
+  // ✅ Fetch all donation requests
   const {
     data: requests = [],
     isLoading,
@@ -25,7 +29,7 @@ export default function AllBloodDonationRequests() {
     },
   });
 
-  // ✅ Delete mutation
+  // ✅ Delete mutation (admin only)
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
       await axiosSecure.delete(`/donationRequests/${id}`);
@@ -39,16 +43,25 @@ export default function AllBloodDonationRequests() {
   // ✅ Update status mutation
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }) => {
-      await axiosSecure.patch(`/donationRequests/${id}`, { status });
+      // Single endpoint for admin/volunteer
+      const url = `/donationRequests/${id}/status/admin`;
+      await axiosSecure.patch(url, { status });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["allDonationRequests"]);
     },
   });
-
   // ✅ Apply filter
   const visible =
     filter === "all" ? requests : requests.filter((r) => r.status === filter);
+
+  if (roleLoading) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <span className="loading loading-spinner text-primary"></span>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4">
@@ -115,6 +128,7 @@ export default function AllBloodDonationRequests() {
                     )}
                   </td>
                   <td className="flex flex-wrap gap-1">
+                    {/* View button for all roles */}
                     <button
                       className="btn btn-xs"
                       onClick={() =>
@@ -124,46 +138,91 @@ export default function AllBloodDonationRequests() {
                       View
                     </button>
 
-                    <button
-                      className="btn btn-xs"
-                      onClick={() =>
-                        navigate(`/updateDonationRequest/${r._id}`)
-                      }
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-xs btn-error"
-                      onClick={() => setConfirmId(r._id)}
-                    >
-                      Delete
-                    </button>
-
-                    {r.status === "inprogress" && (
+                    {/* Admin-only actions */}
+                    {role === "admin" && (
                       <>
                         <button
-                          className="btn btn-xs btn-success"
+                          className="btn btn-xs"
                           onClick={() =>
-                            updateStatusMutation.mutate({
-                              id: r._id,
-                              status: "done",
-                            })
+                            navigate(`/updateDonationRequest/${r._id}`)
                           }
                         >
-                          Done
+                          Edit
                         </button>
                         <button
-                          className="btn btn-xs btn-warning"
-                          onClick={() =>
-                            updateStatusMutation.mutate({
-                              id: r._id,
-                              status: "canceled",
-                            })
-                          }
+                          className="btn btn-xs btn-error"
+                          onClick={() => setConfirmId(r._id)}
                         >
-                          Cancel
+                          Delete
                         </button>
+
+                        {r.status === "inprogress" && (
+                          <>
+                            <button
+                              className="btn btn-xs btn-success"
+                              onClick={() =>
+                                updateStatusMutation.mutate({
+                                  id: r._id,
+                                  status: "done",
+                                })
+                              }
+                            >
+                              Done
+                            </button>
+                            <button
+                              className="btn btn-xs btn-warning"
+                              onClick={() =>
+                                updateStatusMutation.mutate({
+                                  id: r._id,
+                                  status: "canceled",
+                                })
+                              }
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        )}
                       </>
+                    )}
+
+                    {/* Volunteer-only action: pending -> inprogress */}
+                    {role === "volunteer" && r.status === "pending" && (
+                      <button
+                        className="btn btn-xs btn-primary"
+                        onClick={() => {
+                          Swal.fire({
+                            title: "Mark this request as In Progress?",
+                            icon: "question",
+                            showCancelButton: true,
+                            confirmButtonText: "Yes, mark it",
+                            cancelButtonText: "Cancel",
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              updateStatusMutation.mutate(
+                                { id: r._id, status: "inprogress" },
+                                {
+                                  onSuccess: () => {
+                                    Swal.fire(
+                                      "Updated!",
+                                      "The request is now In Progress.",
+                                      "success"
+                                    );
+                                  },
+                                  onError: () => {
+                                    Swal.fire(
+                                      "Error!",
+                                      "Failed to update status.",
+                                      "error"
+                                    );
+                                  },
+                                }
+                              );
+                            }
+                          });
+                        }}
+                      >
+                        Mark In Progress
+                      </button>
                     )}
                   </td>
                 </tr>
@@ -173,24 +232,26 @@ export default function AllBloodDonationRequests() {
         </div>
       )}
 
-      {/* Confirmation Modal */}
-      <div className={`modal ${confirmId ? "modal-open" : ""}`}>
-        <div className="modal-box">
-          <h3 className="font-bold">Delete this request?</h3>
-          <div className="modal-action">
-            <button className="btn" onClick={() => setConfirmId(null)}>
-              Cancel
-            </button>
-            <button
-              className="btn btn-error"
-              onClick={() => deleteMutation.mutate(confirmId)}
-              disabled={deleteMutation.isLoading}
-            >
-              {deleteMutation.isLoading ? "Deleting..." : "Delete"}
-            </button>
+      {/* Confirmation Modal (admin only) */}
+      {role === "admin" && (
+        <div className={`modal ${confirmId ? "modal-open" : ""}`}>
+          <div className="modal-box">
+            <h3 className="font-bold">Delete this request?</h3>
+            <div className="modal-action">
+              <button className="btn" onClick={() => setConfirmId(null)}>
+                Cancel
+              </button>
+              <button
+                className="btn btn-error"
+                onClick={() => deleteMutation.mutate(confirmId)}
+                disabled={deleteMutation.isLoading}
+              >
+                {deleteMutation.isLoading ? "Deleting..." : "Delete"}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

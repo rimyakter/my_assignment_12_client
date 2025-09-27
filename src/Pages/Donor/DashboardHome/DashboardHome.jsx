@@ -3,15 +3,17 @@ import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
+import useUserRole from "../../../hooks/useUserRole";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function DashboardHome() {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
+  const { role } = useUserRole(user?.email); // check role
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // Fetch requests with TanStack Query
+  // Fetch only the donor's own requests
   const {
     data: requests = [],
     isLoading,
@@ -20,16 +22,16 @@ export default function DashboardHome() {
     queryKey: ["donationRequests", user?.email],
     queryFn: async () => {
       const { data } = await axiosSecure.get("/donationRequests", {
-        params: { requesterEmail: user.email },
+        params: { requesterEmail: user.email }, // fetch only their own
       });
       return data
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 3);
+        .slice(0, 3); // only 3 most recent posts
     },
-    enabled: !!user?.email,
+    enabled: !!user?.email && role === "donor",
   });
 
-  // Mutations
+  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: (id) => axiosSecure.delete(`/donationRequests/${id}`),
     onSuccess: () => {
@@ -41,20 +43,54 @@ export default function DashboardHome() {
     },
   });
 
+  // Status update mutation
   const statusMutation = useMutation({
-    mutationFn: ({ id, status }) =>
-      axiosSecure.patch(`/donationRequests/${id}`, { status }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["donationRequests", user?.email]);
-      Swal.fire("Updated!", "Status changed successfully", "success");
+    mutationFn: async ({ id, status }) => {
+      console.log("Updating status:", id, status); // debug
+
+      // Only allow "done" or "canceled"
+      if (!["done", "canceled"].includes(status)) {
+        throw new Error("Invalid status. Allowed: done, canceled");
+      }
+
+      try {
+        const { data } = await axiosSecure.patch(
+          `/donationRequests/${id}/status/donor`,
+          { status },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        console.log("Backend response:", data); // debug
+        return data;
+      } catch (err) {
+        console.error(
+          "Status update error:",
+          err.response?.data || err.message
+        );
+
+        // Show backend message if available
+        const message =
+          err.response?.data?.error || err.message || "Failed to update status";
+        throw new Error(message);
+      }
     },
-    onError: () => {
-      Swal.fire("Error", "Failed to update status", "error");
+    onSuccess: (data) => {
+      console.log("Status update success:", data);
+      queryClient.invalidateQueries(["donationRequests", user?.email]);
+      Swal.fire(
+        "Updated!",
+        data.message || "Status changed successfully",
+        "success"
+      );
+    },
+    onError: (error) => {
+      console.error("Mutation failed:", error);
+      Swal.fire("Error", error.message || "Failed to update status", "error");
     },
   });
 
-  // Handlers
-  // Handler for delete button
+  // Delete handler
   const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -72,9 +108,19 @@ export default function DashboardHome() {
     });
   };
 
+  // Status change handler
   const handleStatusChange = (id, status) => {
     statusMutation.mutate({ id, status });
   };
+
+  // Role check: only donors can view
+  if (role !== "donor") {
+    return (
+      <div className="p-6 text-center text-red-500">
+        Access denied. Only donors can view this page.
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
@@ -160,7 +206,6 @@ export default function DashboardHome() {
                       )}
                     </td>
                     <td className="flex gap-2 justify-center">
-                      {/* Status actions */}
                       {req.status === "inprogress" && (
                         <>
                           <button
@@ -214,7 +259,6 @@ export default function DashboardHome() {
           </div>
         )}
 
-        {/* View all */}
         {requests.length > 0 && (
           <div className="mt-4 text-center">
             <button

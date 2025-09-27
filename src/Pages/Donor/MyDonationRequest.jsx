@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Swal from "sweetalert2";
+import { FaEye, FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 
@@ -11,9 +13,8 @@ export default function MyDonationRequests() {
   const queryClient = useQueryClient();
 
   const [filter, setFilter] = useState("all");
-  const [confirmId, setConfirmId] = useState(null);
 
-  // ✅ Fetch requests
+  // Fetch all requests
   const {
     data: requests = [],
     isLoading,
@@ -27,33 +28,49 @@ export default function MyDonationRequests() {
     },
   });
 
-  // ✅ Delete mutation
-  const deleteMutation = useMutation({
-    mutationFn: async (id) => {
-      await axiosSecure.delete(`/donationRequests/${id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["donationRequests"]);
-      setConfirmId(null);
-    },
-  });
-
-  // ✅ Update status mutation
-  const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }) => {
-      await axiosSecure.patch(`/donationRequests/${id}`, { status });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["donationRequests"]);
-    },
-  });
-
-  // ✅ Filter user-specific requests
   const myRequests = requests.filter((r) => r.requesterEmail === user?.email);
-
   const visible = myRequests.filter((r) =>
     filter === "all" ? true : r.status === filter
   );
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: (id) => axiosSecure.delete(`/donationRequests/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["donationRequests"]);
+      Swal.fire("Deleted!", "Your request has been removed.", "success");
+    },
+    onError: () => Swal.fire("Error", "Failed to delete request", "error"),
+  });
+
+  // Status update mutation
+  const statusMutation = useMutation({
+    mutationFn: ({ id, status }) =>
+      axiosSecure.patch(`/donationRequests/${id}/status/donor`, { status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["donationRequests"]);
+      Swal.fire("Updated!", "Status changed successfully", "success");
+    },
+    onError: () => Swal.fire("Error", "Failed to update status", "error"),
+  });
+
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This request will be permanently deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) deleteMutation.mutate(id);
+    });
+  };
+
+  const handleStatusChange = (id, status) => {
+    statusMutation.mutate({ id, status });
+  };
 
   return (
     <div className="p-4">
@@ -79,8 +96,8 @@ export default function MyDonationRequests() {
       ) : visible.length === 0 ? (
         <p>No requests found.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="table w-full">
+        <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
+          <table className="table table-zebra w-full">
             <thead>
               <tr>
                 <th>Recipient</th>
@@ -90,7 +107,7 @@ export default function MyDonationRequests() {
                 <th>Blood</th>
                 <th>Status</th>
                 <th>Donor</th>
-                <th>Actions</th>
+                <th className="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -102,74 +119,83 @@ export default function MyDonationRequests() {
                   </td>
                   <td>{r.donationDate || "-"}</td>
                   <td>{r.donationTime || "-"}</td>
-                  <td>{r.bloodGroup}</td>
-                  <td>{r.status}</td>
+                  <td>
+                    <span className="badge badge-outline badge-primary">
+                      {r.bloodGroup}
+                    </span>
+                  </td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        r.status === "pending"
+                          ? "badge-warning"
+                          : r.status === "inprogress"
+                          ? "badge-info"
+                          : r.status === "done"
+                          ? "badge-success"
+                          : "badge-error"
+                      }`}
+                    >
+                      {r.status}
+                    </span>
+                  </td>
                   <td>
                     {r.status === "inprogress" ? (
                       <>
-                        {r.donorName} <br />
-                        <span className="text-xs">{r.donorEmail}</span>
+                        <p className="font-medium">{r.donorName}</p>
+                        <p className="text-xs text-gray-500">{r.donorEmail}</p>
                       </>
                     ) : (
                       "-"
                     )}
                   </td>
-                  <td className="flex gap-1">
-                    <button
-                      className="btn btn-xs"
-                      onClick={() =>
-                        navigate(`/detailsDonationRequest/${r._id}`)
-                      }
-                    >
-                      View
-                    </button>
-
-                    {r.requesterEmail === user?.email && (
-                      <>
-                        <button
-                          className="btn btn-xs"
-                          onClick={() =>
-                            navigate(`/updateDonationRequest/${r._id}`)
-                          }
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="btn btn-xs btn-error"
-                          onClick={() => setConfirmId(r._id)}
-                        >
-                          Delete
-                        </button>
-                      </>
-                    )}
-
+                  <td className="flex gap-2 justify-center">
                     {r.status === "inprogress" &&
                       r.donorEmail === user?.email && (
                         <>
                           <button
-                            className="btn btn-xs btn-success"
-                            onClick={() =>
-                              updateStatusMutation.mutate({
-                                id: r._id,
-                                status: "done",
-                              })
-                            }
+                            onClick={() => handleStatusChange(r._id, "done")}
+                            className="btn btn-xs btn-success tooltip"
+                            data-tip="Mark as Done"
                           >
-                            Done
+                            <FaCheck />
                           </button>
                           <button
-                            className="btn btn-xs btn-error"
                             onClick={() =>
-                              updateStatusMutation.mutate({
-                                id: r._id,
-                                status: "canceled",
-                              })
+                              handleStatusChange(r._id, "canceled")
                             }
+                            className="btn btn-xs btn-warning tooltip"
+                            data-tip="Cancel"
                           >
-                            Cancel
+                            <FaTimes />
                           </button>
                         </>
                       )}
+                    <button
+                      onClick={() =>
+                        navigate(`/detailsDonationRequest/${r._id}`)
+                      }
+                      className="btn btn-xs btn-info tooltip"
+                      data-tip="View Details"
+                    >
+                      <FaEye />
+                    </button>
+                    <button
+                      onClick={() =>
+                        navigate(`/updateDonationRequest/${r._id}`)
+                      }
+                      className="btn btn-xs btn-primary tooltip"
+                      data-tip="Edit"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(r._id)}
+                      className="btn btn-xs btn-error tooltip"
+                      data-tip="Delete"
+                    >
+                      <FaTrash />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -177,25 +203,6 @@ export default function MyDonationRequests() {
           </table>
         </div>
       )}
-
-      {/* Confirmation Modal */}
-      <div className={`modal ${confirmId ? "modal-open" : ""}`}>
-        <div className="modal-box">
-          <h3 className="font-bold">Delete this request?</h3>
-          <div className="modal-action">
-            <button className="btn" onClick={() => setConfirmId(null)}>
-              Cancel
-            </button>
-            <button
-              className="btn btn-error"
-              onClick={() => deleteMutation.mutate(confirmId)}
-              disabled={deleteMutation.isLoading}
-            >
-              {deleteMutation.isLoading ? "Deleting..." : "Delete"}
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
