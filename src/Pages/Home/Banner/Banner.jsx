@@ -39,7 +39,7 @@ export default function Banner() {
           </button>
 
           <button
-            onClick={() => navigate("/search")}
+            onClick={() => navigate("/searchPage")}
             className="btn btn-outline btn-accent text-white border-white flex items-center gap-2 px-6 shadow-none hover:bg-white hover:text-[#E41F35]"
           >
             <FaSearch /> Search Donors
