@@ -8,12 +8,15 @@ import {
   FaListAlt,
 } from "react-icons/fa";
 import { MdSpaceDashboard } from "react-icons/md";
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useNavigate } from "react-router";
 import NavLogo from "../Pages/Shared/NavLogo/NavLogo";
 import useUserRole from "../hooks/useUserRole"; // adjust path
+import useAuth from "../hooks/useAuth";
 
 const DashboardLayout = () => {
   const { role, loading } = useUserRole();
+  const { logOut } = useAuth(); // assuming your hook provides a logout function
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -128,6 +131,15 @@ const DashboardLayout = () => {
     </>
   );
 
+  //handle Logout
+  const handleLogout = async () => {
+    try {
+      await logOut(); // perform the logout action
+      navigate("/login"); // redirect to login page
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
   return (
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
@@ -155,14 +167,6 @@ const DashboardLayout = () => {
             <MdSpaceDashboard className="text-primary" size={24} />
             My Dashboard
           </div>
-          <div className="flex-none hidden lg:flex items-center gap-4">
-            <button className="btn btn-ghost btn-circle">
-              <FaUser size={18} />
-            </button>
-            <button className="btn btn-ghost btn-circle">
-              <FaCog size={18} />
-            </button>
-          </div>
         </div>
 
         {/* Page content */}
@@ -185,9 +189,12 @@ const DashboardLayout = () => {
           {role === "volunteer" && volunteerLinks}
 
           <li className="mt-auto">
-            <a className="flex items-center gap-3 text-error hover:bg-error/20 rounded-lg">
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 text-error hover:bg-error/20 rounded-lg"
+            >
               <FaSignOutAlt /> Logout
-            </a>
+            </button>
           </li>
         </ul>
       </div>
