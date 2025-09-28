@@ -22,21 +22,21 @@ export default function FeaturedSection() {
       description:
         "Easily search for nearby donors and request blood quickly in times of need.",
       icon: <FaSearch className="text-4xl" />,
-      link: "/search",
+      link: "/searchPage",
     },
     {
       title: "Health Tips",
       description:
         "Stay informed with useful health and wellness guides for donors and recipients.",
       icon: <FaBookMedical className="text-4xl" />,
-      link: "/blog",
+      link: "/blogs",
     },
     {
       title: "Success Stories",
       description:
         "Read inspiring stories of lives saved through the generosity of blood donors.",
       icon: <FaRegSmile className="text-4xl" />,
-      link: "/blog",
+      link: "/blogs",
     },
   ];
 
