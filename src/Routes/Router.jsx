@@ -134,11 +134,19 @@ export const router = createBrowserRouter([
       },
       {
         path: "/dashboard/fundingPage",
-        element: <FundingPage></FundingPage>,
+        element: (
+          <PrivateRouter>
+            <FundingPage></FundingPage>
+          </PrivateRouter>
+        ),
       },
       {
         path: "/dashboard/fundingPage/giveFund",
-        element: <Fund></Fund>,
+        element: (
+          <PrivateRouter>
+            <Fund></Fund>
+          </PrivateRouter>
+        ),
       },
     ],
   },
