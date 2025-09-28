@@ -94,6 +94,14 @@ const DashboardLayout = () => {
           <FaCog /> Content Management
         </NavLink>
       </li>
+      <li>
+        <NavLink
+          to="/dashboard/fundingPage"
+          className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
+        >
+          <FaCog /> All Funding
+        </NavLink>
+      </li>
     </>
   );
 

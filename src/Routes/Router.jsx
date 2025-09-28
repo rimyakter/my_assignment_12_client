@@ -23,6 +23,8 @@ import ForbiddenPage from "../Pages/Forbidden/ForbiddenPage";
 import AdminRoutes from "./AdminRoutes";
 import MainDashboardHome from "../Pages/Home/MainDashboardHome";
 import BlogDetails from "../Pages/BlogList/BlogDetails";
+import FundingPage from "../Pages/Funding/FundingPage";
+import Fund from "../Pages/Funding/Fund";
 
 export const router = createBrowserRouter([
   {
@@ -129,6 +131,14 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard/content-management/add-blog",
         element: <AddBlog></AddBlog>,
+      },
+      {
+        path: "/dashboard/fundingPage",
+        element: <FundingPage></FundingPage>,
+      },
+      {
+        path: "/dashboard/fundingPage/giveFund",
+        element: <Fund></Fund>,
       },
     ],
   },
