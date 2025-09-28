@@ -53,7 +53,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/blogs/:id",
-        element: <BlogDetails></BlogDetails>,
+        element: (
+          <PrivateRouter>
+            <BlogDetails></BlogDetails>
+          </PrivateRouter>
+        ),
       },
 
       {

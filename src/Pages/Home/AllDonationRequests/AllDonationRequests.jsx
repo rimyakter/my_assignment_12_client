@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router";
 import useAuth from "../../../hooks/useAuth";
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAxios from "../../../hooks/useAxios";
 
 export default function AllDonationRequests() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const axiosSecure = useAxiosSecure();
+  const axiosInstance = useAxios();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -16,7 +16,7 @@ export default function AllDonationRequests() {
     const fetchRequests = async () => {
       try {
         setLoading(true);
-        const res = await axiosSecure.get(`/donationRequests/pending`);
+        const res = await axiosInstance.get(`/donationRequests/pending`);
         setRequests(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error(err);
