@@ -67,6 +67,14 @@ const DashboardLayout = () => {
           <FaHandHoldingHeart /> Create Donation Request
         </NavLink>
       </li>
+      <li>
+        <NavLink
+          to="/dashboard/fundingPage"
+          className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
+        >
+          <FaCog /> All Funding
+        </NavLink>
+      </li>
     </>
   );
 
@@ -125,6 +133,14 @@ const DashboardLayout = () => {
           className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
         >
           <FaCog /> Content Management
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/dashboard/fundingPage"
+          className="flex items-center gap-3 hover:bg-base-300 rounded-lg"
+        >
+          <FaCog /> All Funding
         </NavLink>
       </li>
       {/* Add volunteer-only links here in the future */}
