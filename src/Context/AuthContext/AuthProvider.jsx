@@ -31,7 +31,7 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      console.log("current user", currentUser);
+      // console.log("current user", currentUser);
 
       //Post request for JWT using user email
       //Api end-point : JWT (post method)
@@ -47,7 +47,7 @@ const AuthProvider = ({ children }) => {
             }
           )
           .then((res) => {
-            console.log(res.data);
+            // console.log(res.data);
             //for store token local storage method
             // localStorage.setItem("token", res.data.token);
           });

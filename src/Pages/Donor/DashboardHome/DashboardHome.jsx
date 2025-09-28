@@ -46,7 +46,7 @@ export default function DashboardHome() {
   // Status update mutation
   const statusMutation = useMutation({
     mutationFn: async ({ id, status }) => {
-      console.log("Updating status:", id, status); // debug
+      // console.log("Updating status:", id, status); // debug
 
       // Only allow "done" or "canceled"
       if (!["done", "canceled"].includes(status)) {
@@ -61,7 +61,7 @@ export default function DashboardHome() {
             headers: { "Content-Type": "application/json" },
           }
         );
-        console.log("Backend response:", data); // debug
+        // console.log("Backend response:", data); // debug
         return data;
       } catch (err) {
         console.error(
@@ -76,7 +76,7 @@ export default function DashboardHome() {
       }
     },
     onSuccess: (data) => {
-      console.log("Status update success:", data);
+      // console.log("Status update success:", data);
       queryClient.invalidateQueries(["donationRequests", user?.email]);
       Swal.fire(
         "Updated!",

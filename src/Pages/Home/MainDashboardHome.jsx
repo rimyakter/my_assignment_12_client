@@ -8,7 +8,7 @@ import ForbiddenPage from "../Forbidden/ForbiddenPage";
 
 const MainDashboardHome = () => {
   const { role, roleLoading } = useUserRole();
-  console.log(role);
+  // console.log(role);
 
   if (roleLoading) {
     return <Loading></Loading>;
