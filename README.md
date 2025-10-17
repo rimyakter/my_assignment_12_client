@@ -1,130 +1,124 @@
-# Blood Donation Application
+# Blood Donation Application 🩸
 
-**Assignment:** assignment12_category_001  
-**Stack:** MERN (MongoDB, Express.js, React, Node.js)
+![Blood Donation Application Screenshot](https://i.ibb.co.com/RpHfpS8Q/bloodbank.png)  
 
----
-
-## 🌟 Objective
-
-The Blood Donation Application is designed to connect blood donors with recipients, streamlining the donation process. The app provides role-based dashboards for **Admin**, **Donor**, and **Volunteer**, enabling user management, donation request handling, and content management.
-
----
-
-## 🔑 Admin Credentials
-
-- **Username:** riad@gmail.com
-- **Password:** 123456
 
 ---
 
 ## 🌐 Live Site
 
-[Visit Blood Donation Application](https://blood-bridge-63fb5.web.app)
+[Visit Blood Donation Application](https://blood-bridge-63fb5.web.app)  
 
 ---
 
-## 💻 Features
+## 🔹 Project Overview
 
-1. **User Registration & Login:** Donors can register and log in to manage their profiles.
-2. **Role-Based Dashboards:** Separate dashboards for Admin, Donor, and Volunteer with tailored features.
-3. **Donation Requests:** Create, view, edit, and manage blood donation requests.
-4. **Profile Management:** Users can update their personal info and avatar securely.
-5. **Content Management:** Admins can create, publish, unpublish, and delete blogs using a rich text editor.
-6. **Search Donors:** Filter donors by blood group, district, and upazila.
-7. **Notifications:** Sweet alerts/toasts for all CRUD operations and authentication events.
-8. **Responsive Design:** Fully responsive for mobile, tablet, and desktop, including dashboards.
-9. **JWT Authentication:** Protects all private APIs using Firebase or custom JWT.
-10. **Funding Integration:** Users can donate funds using Stripe; totals displayed in dashboards.
-11. **Pagination & Filtering:** Applied in user, donation, and funding tables.
-12. **Environment Variables:** Firebase and MongoDB credentials hidden via `.env`.
-13. **Tanstack Query:** Used for all GET requests to fetch data efficiently.
-14. **Status Management:** Admin can block/unblock users; only active users can create donation requests.
+**Blood Donation Application** is designed to connect blood donors with recipients, streamlining the donation process.  
+The app provides **role-based dashboards** for Admin, Donor, and Volunteer, enabling user management, donation request handling, and content management.
 
 ---
 
-## 🧑‍🤝‍🧑 User Roles
+## 💻 Technologies Used
 
-| Role          | Permissions                                                    |
-| ------------- | -------------------------------------------------------------- |
-| **Admin**     | Full access: manage users, donations, content, funding, roles. |
-| **Donor**     | Create/view/edit own donation requests, update profile.        |
-| **Volunteer** | View and update donation requests, manage content (limited).   |
+### Frontend
+- React.js  
+- React Router  
+- Tailwind CSS / DaisyUI  
+- Tanstack Query  
+- Axios  
+- SweetAlert2  
 
----
+### Backend
+- Node.js  
+- Express.js  
+- MongoDB (Atlas)  
+- dotenv (env management)  
+- cors (CORS handling)  
+- jsonwebtoken (JWT authentication)  
 
-## 📄 User Authentication
+### Authentication & Security
+- Firebase Authentication (email/password)  
+- JWT for protecting private APIs  
 
-### Registration
-
-- Email, Name, Avatar (via imageBB)
-- Blood Group, District, Upazila
-- Password & Confirm Password
-- Default role: `donor`
-- Default status: `active`
-
-### Login
-
-- Email & Password
-- Redirects between login & registration pages
-
----
-
-## 📊 Dashboard
-
-### Donor
-
-- View 3 recent donation requests
-- Create, edit, delete, and view donation requests
-- Paginated table & status filtering
-
-### Admin
-
-- Dashboard with statistics cards: total users, funds, donation requests
-- Manage all users (block/unblock, assign roles)
-- Manage all donation requests
-- Full content/blog management
-
-### Volunteer
-
-- View all donation requests (limited update access)
-- Manage content (except publish/delete)
+### Payments
+- Stripe integration for funding/donations  
 
 ---
 
-## 🏠 Public Pages
+## ✨ Core Features
 
-- **Home Page:** Banner, Join as Donor, Search Donors, Featured section, Contact Us, Footer
-- **Search Page:** Filter donors by blood group, district, upazila
-- **Donation Requests:** View pending donation requests
-- **Donation Request Details:** Donate to requests (private route)
-- **Blog Page:** View published blogs, detailed reading
+### 🔑 User Authentication
+- Registration (Email, Name, Avatar via imageBB, Blood Group, District, Upazila, Password)  
+- Login (Email & Password)  
+- Role-based access control  
+- JWT authentication for private APIs  
+
+### 🧑‍🤝‍🧑 User Roles
+| Role       | Permissions |
+|------------|------------|
+| Admin      | Full access: manage users, donations, content, funding, roles |
+| Donor      | Create/view/edit own donation requests, update profile |
+| Volunteer  | View all donation requests (limited update), manage content (except publish/delete) |
+
+### 📄 Dashboard
+**Donor**
+- View 3 recent donation requests  
+- Create, edit, delete, and view donation requests  
+- Paginated table & status filtering  
+
+**Admin**
+- Dashboard with statistics cards: total users, funds, donation requests  
+- Manage all users (block/unblock, assign roles)  
+- Manage all donation requests  
+- Full content/blog management  
+
+**Volunteer**
+- View all donation requests (limited update access)  
+- Manage content (except publish/delete)  
+
+### 🏠 Public Pages
+- Home Page: Banner, Join as Donor, Search Donors, Featured section, Contact Us, Footer  
+- Search Page: Filter donors by blood group, district, upazila  
+- Donation Requests: View pending donation requests  
+- Donation Request Details: Donate to requests (private route)  
+- Blog Page: View published blogs, detailed reading  
+
+### ⚡ Additional Features & Challenges
+- Funding Page: Show all funds, integrate Stripe, paginate table  
+- Tanstack Query used for GET requests  
+- Sweet Alerts & notifications for all CRUD and auth operations  
+- Private routes maintain login state after reload  
+- Responsive design for mobile, tablet, and desktop  
 
 ---
 
-## ⚡ Challenges Implemented
+## ⚙️ Dependencies
 
-- **Funding Page:** Show all funds, integrate Stripe, paginate table
-- **JWT:** Protect private APIs
-- **Tanstack Query:** Implemented for GET requests
-- **Sweet Alerts & Notifications:** All CRUD and auth operations
+- react  
+- react-dom  
+- react-router
+- tailwindcss  
+- daisyui  
+- axios  
+- firebase  
+- node  
+- express  
+- mongodb  
+- dotenv  
+- cors  
+- jsonwebtoken  
+- sweetalert2  
+- stripe (for payments)  
+- tanstack-query  
 
----
-
-## 📂 GitHub Commits
-
-- **Client-side:** 20+ notable commits
-- **Server-side:** 12+ notable commits
-
----
-
-## 📝 Notes
-
-- No social login implemented
-- No email verification or password reset
-- No Lorem Ipsum used
-- Private routes maintain login state after reload
+*(Check `package.json` for full list of dependencies)*
 
 ---
 
-> **Enjoy donating blood and saving lives! 🩸**
+## 🚀 How to Run Locally
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/rimyakter/my_assignment_12_client.git
+cd my_assignment_12_client
