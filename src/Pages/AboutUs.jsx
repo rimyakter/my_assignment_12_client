@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaHeartbeat, FaHandHoldingHeart, FaUsers } from "react-icons/fa";
+import { Link } from "react-router";
 
 export default function AboutUs() {
   return (
@@ -73,9 +74,12 @@ export default function AboutUs() {
         transition={{ delay: 0.6, duration: 0.5 }}
         className="mt-4"
       >
-        <button className="btn btn-primary text-white px-6 py-3 hover:bg-[#E41F35] transition-colors">
+        <Link
+          to="/login"
+          className="btn btn-primary text-white px-6 py-3 hover:bg-[#E41F35] transition-colors"
+        >
           Join Our Mission
-        </button>
+        </Link>
       </motion.div>
     </section>
   );

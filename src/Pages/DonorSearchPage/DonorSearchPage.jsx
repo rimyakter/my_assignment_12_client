@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { FaTint, FaMapMarkerAlt, FaHospital, FaUserAlt } from "react-icons/fa";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const DonorSearchPage = () => {
@@ -52,15 +53,23 @@ const DonorSearchPage = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-2xl font-bold text-center mb-6">🔎 Search Donors</h1>
+    <div className="w-11/12 mx-auto my-12">
+      {/* Title & Subtitle */}
+      <div className="text-center mb-10">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
+          Search Donors
+        </h1>
+        <p className="text-gray-600 text-xs md:text-sm">
+          Find blood donors by blood group, district, and upazila to help save
+          lives
+        </p>
+      </div>
 
       {/* Search Form */}
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-base-200 p-4 rounded-xl shadow"
+        className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-base-200 p-4 rounded-xl shadow mb-12"
       >
-        {/* Blood Group (Required) */}
         <select
           {...register("bloodGroup", { required: true })}
           className="select select-bordered w-full"
@@ -76,7 +85,6 @@ const DonorSearchPage = () => {
           <option>O-</option>
         </select>
 
-        {/* District (Required) */}
         <select
           {...register("district")}
           className="select select-bordered w-full"
@@ -89,7 +97,6 @@ const DonorSearchPage = () => {
           ))}
         </select>
 
-        {/* Upazila (Required) */}
         <select
           {...register("upazila")}
           className="select select-bordered w-full"
@@ -108,18 +115,17 @@ const DonorSearchPage = () => {
             ))}
         </select>
 
-        {/* Search Button */}
         <button type="submit" className="btn btn-primary w-full">
           Search
         </button>
       </form>
 
       {/* Results */}
-      <div className="mt-8">
+      <div>
         {!searched ? (
           <p className="text-center text-gray-500">
-            Please select <b>Blood Group, District, and Upazila</b> then click
-            <b> Search</b>.
+            Please select <b>Blood Group, District, and Upazila</b> then click{" "}
+            <b>Search</b>.
           </p>
         ) : loading ? (
           <p className="text-center text-blue-500 font-medium">Searching...</p>
@@ -128,34 +134,38 @@ const DonorSearchPage = () => {
             ❌ No donors found for your search.
           </p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {donors.map((donor) => (
               <div
                 key={donor._id}
-                className="card bg-base-100 shadow-xl p-4 text-center"
+                className="bg-gray-100 text-gray-900 rounded-xl shadow-md p-5 flex flex-col items-center text-center hover:shadow-lg transition-transform transform hover:-translate-y-1"
               >
                 <img
                   src={donor.photoURL}
                   alt={donor.name}
-                  className="w-24 h-24 mx-auto rounded-full object-cover border-2 border-primary"
+                  className="w-24 h-24 rounded-full object-cover border-2 border-primary mb-4"
                 />
-                <h3 className="text-lg font-bold mt-2">{donor.name}</h3>
-                <p className="text-sm text-gray-500">{donor.email}</p>
-                <p className="mt-2 font-semibold text-primary">
-                  Blood Group: {donor.bloodGroup}
-                </p>
-                <p>
-                  {donor.district}, {donor.upazila}
-                </p>
-                <p
-                  className={`mt-1 font-medium ${
-                    donor.status === "active"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {donor.status}
-                </p>
+                <h3 className="text-lg font-bold mb-1">{donor.name}</h3>
+                <p className="text-sm text-gray-600 mb-2">{donor.email}</p>
+
+                {/* Key Info with Icons */}
+                <div className="flex flex-col gap-2 mb-3 text-gray-900">
+                  <span className="flex items-center gap-2">
+                    <FaTint className="text-primary" /> {donor.bloodGroup}
+                  </span>
+                  <span className="flex items-center gap-2 text-sm">
+                    <FaMapMarkerAlt className="text-primary" /> {donor.district}
+                    , {donor.upazila}
+                  </span>
+                  <span className="flex items-center gap-2 text-sm">
+                    <FaUserAlt className="text-primary" /> Status:{" "}
+                    {donor.status}
+                  </span>
+                  <span className="flex items-center gap-2 text-sm">
+                    <FaHospital className="text-primary" /> Availability:
+                    Immediate
+                  </span>
+                </div>
               </div>
             ))}
           </div>
