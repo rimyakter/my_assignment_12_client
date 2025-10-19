@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import Swal from "sweetalert2";
+import {
+  FaUser,
+  FaEnvelope,
+  FaHospital,
+  FaTint,
+  FaCalendarAlt,
+  FaClock,
+  FaMapMarkerAlt,
+  FaCommentDots,
+  FaInfoCircle,
+  FaHandsHelping,
+} from "react-icons/fa";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
@@ -13,7 +25,6 @@ export default function DetailsDonationRequest() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch request details
   useEffect(() => {
     if (!id) return;
     axiosSecure
@@ -26,7 +37,6 @@ export default function DetailsDonationRequest() {
       .finally(() => setLoading(false));
   }, [id, axiosSecure]);
 
-  // Confirm donation
   const handleConfirmDonation = async () => {
     try {
       const res = await axiosSecure.post(`/donationRequests/${id}/confirm`);
@@ -61,62 +71,99 @@ export default function DetailsDonationRequest() {
     );
 
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-center">
-        Donation Request Details
-      </h1>
-
-      <div className="card bg-base-100 shadow-xl p-6 space-y-2">
-        <p>
-          <strong>Requester:</strong> {donationRequest.requesterName}
+    <div className="w-11/12 mx-auto mt-12">
+      {/* Header */}
+      <div className="text-center mb-12">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
+          Donation Request Details
+        </h1>
+        <p className="text-gray-600 text-sm">
+          Review the details below before confirming your blood donation.
         </p>
-        <p>
-          <strong>Email:</strong> {donationRequest.requesterEmail}
-        </p>
-        <p>
-          <strong>Recipient:</strong> {donationRequest.recipientName}
-        </p>
-        <p>
-          <strong>District:</strong> {donationRequest.recipientDistrict}
-        </p>
-        <p>
-          <strong>Upazila:</strong> {donationRequest.recipientUpazila}
-        </p>
-        <p>
-          <strong>Hospital:</strong> {donationRequest.hospitalName}
-        </p>
-        <p>
-          <strong>Blood Group:</strong> {donationRequest.bloodGroup}
-        </p>
-        <p>
-          <strong>Date:</strong> {donationRequest.donationDate}
-        </p>
-        <p>
-          <strong>Time:</strong> {donationRequest.donationTime}
-        </p>
-        <p>
-          <strong>Message:</strong> {donationRequest.requestMessage}
-        </p>
-        <p>
-          <strong>Status:</strong>{" "}
-          <span className="badge badge-info">{donationRequest.status}</span>
-        </p>
-        {donationRequest.donorName && (
-          <p>
-            <strong>Donor:</strong> {donationRequest.donorName} (
-            {donationRequest.donorEmail})
-          </p>
-        )}
       </div>
 
-      {/* Donate button only for pending */}
+      {/* Card */}
+      <div className="w-full bg-white shadow-lg rounded-xl p-8 border border-gray-200">
+        {/* Static info bar */}
+        <div className="flex items-center justify-between mb-6 text-sm text-gray-500 border-b pb-3">
+          <div className="flex items-center gap-2">
+            <FaInfoCircle className="text-primary" />
+            <span>Verified Request • Safe Donation Zone</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <FaHandsHelping className="text-primary" />
+            <span>Emergency Support Available</span>
+          </div>
+        </div>
+
+        {/* Details grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
+          <p className="flex items-center gap-2">
+            <FaUser className="text-primary" />
+            <strong>Requester:</strong> {donationRequest.requesterName}
+          </p>
+          <p className="flex items-center gap-2">
+            <FaEnvelope className="text-primary" />
+            <strong>Email:</strong> {donationRequest.requesterEmail}
+          </p>
+          <p className="flex items-center gap-2">
+            <FaUser className="text-primary" />
+            <strong>Recipient:</strong> {donationRequest.recipientName}
+          </p>
+          <p className="flex items-center gap-2">
+            <FaMapMarkerAlt className="text-primary" />
+            <strong>District:</strong> {donationRequest.recipientDistrict},{" "}
+            {donationRequest.recipientUpazila}
+          </p>
+          <p className="flex items-center gap-2">
+            <FaHospital className="text-primary" />
+            <strong>Hospital:</strong> {donationRequest.hospitalName}
+          </p>
+          <p className="flex items-center gap-2">
+            <FaTint className="text-primary" />
+            <strong>Blood Group:</strong>{" "}
+            <span className="badge bg-primary text-white border-none">
+              {donationRequest.bloodGroup}
+            </span>
+          </p>
+          <p className="flex items-center gap-2">
+            <FaCalendarAlt className="text-primary" />
+            <strong>Date:</strong> {donationRequest.donationDate}
+          </p>
+          <p className="flex items-center gap-2">
+            <FaClock className="text-primary" />
+            <strong>Time:</strong> {donationRequest.donationTime}
+          </p>
+          <p className="flex items-center gap-2 md:col-span-2">
+            <FaCommentDots className="text-primary" />
+            <strong>Message:</strong> {donationRequest.requestMessage}
+          </p>
+          <p className="flex items-center gap-2 md:col-span-2">
+            <FaInfoCircle className="text-primary" />
+            <strong>Status:</strong>{" "}
+            <span className="badge bg-primary text-white border-none">
+              {donationRequest.status}
+            </span>
+          </p>
+
+          {donationRequest.donorName && (
+            <p className="flex items-center gap-2 md:col-span-2">
+              <FaHandsHelping className="text-primary" />
+              <strong>Donor:</strong> {donationRequest.donorName} (
+              {donationRequest.donorEmail})
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Donate Button */}
       {donationRequest.status === "pending" && (
-        <div className="text-center">
+        <div className="text-center mt-8">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="btn btn-primary"
+            className="btn bg-primary hover:bg-primary text-white px-6"
           >
-            Donate
+            Confirm Donation
           </button>
         </div>
       )}
@@ -125,7 +172,7 @@ export default function DetailsDonationRequest() {
       {isModalOpen && (
         <dialog open className="modal">
           <div className="modal-box space-y-4">
-            <h2 className="text-xl font-semibold text-center">
+            <h2 className="text-xl font-semibold text-center text-gray-800">
               Confirm Donation
             </h2>
             <div className="space-y-2">
@@ -145,7 +192,7 @@ export default function DetailsDonationRequest() {
             <div className="modal-action">
               <button
                 onClick={handleConfirmDonation}
-                className="btn btn-success"
+                className="btn bg-[#009688] hover:bg-[#00796B] text-white"
               >
                 Confirm
               </button>
