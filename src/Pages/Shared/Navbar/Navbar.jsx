@@ -52,7 +52,7 @@ const Navbar = () => {
   return (
     <nav className="navbar fixed top-0 left-0 right-0 z-50 bg-[#C21B2E] text-white shadow-md !max-w-none !px-0">
       {/* ✅ Full-width background */}
-      <div className="w-full md:w-11/12 mx-auto flex items-center justify-between h-16 pr-3 md:px-14">
+      <div className="w-full  mx-auto flex items-center justify-between h-16 pr-3 md:px-14">
         {/* Left side (Logo + Mobile Menu) */}
         <div className="flex items-center">
           <div className="dropdown lg:hidden">

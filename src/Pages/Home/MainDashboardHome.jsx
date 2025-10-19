@@ -5,6 +5,7 @@ import AdminHome from "./AdminHome";
 import Loading from "../Shared/Loading";
 import VolunteerHome from "./VolunteerHome";
 import ForbiddenPage from "../Forbidden/ForbiddenPage";
+import AdminLayout from "../../Layouts/AdminLayout";
 
 const MainDashboardHome = () => {
   const { role, roleLoading } = useUserRole();
@@ -16,7 +17,7 @@ const MainDashboardHome = () => {
   if (role === "donor") {
     return <DashboardHome></DashboardHome>;
   } else if (role === "admin") {
-    return <AdminHome></AdminHome>;
+    return <AdminLayout></AdminLayout>;
   } else if (role === "volunteer") {
     return <VolunteerHome></VolunteerHome>;
   } else return <ForbiddenPage></ForbiddenPage>;
