@@ -6,7 +6,7 @@ import { Outlet } from "react-router";
 
 const AuthLayout = () => {
   return (
-    <div className="bg-base-200 w-11/12 mx-auto p-10">
+    <div className="bg-base-200 w-full md:w-11/12 mx-auto p-5 md:p-10">
       <NavLogo></NavLogo>
 
       <div className="hero-content  flex-col lg:flex-row-reverse">

@@ -50,7 +50,7 @@ export default function AllDonationRequests() {
 
   return (
     <div>
-      <div className="text-center my-12">
+      <div className="text-center my-12 px-3">
         <h1 className="text-xl md:text-2xl text-gray-900 font-bold mb-3">
           Blood Donation Requests
         </h1>
@@ -64,7 +64,7 @@ export default function AllDonationRequests() {
         {requests.map((req) => (
           <div
             key={req._id}
-            className="card bg-gray-100 shadow-md rounded-xl text-center w-62 transition-transform transform hover:scale-105 hover:border-1 hover:border-primary"
+            className="w-full card bg-gray-100 shadow-md rounded-xl text-center md:w-62 transition-transform transform hover:scale-105 hover:border-1 hover:border-primary"
           >
             <div className="card-body items-center">
               <h2 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
