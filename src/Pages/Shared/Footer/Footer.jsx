@@ -91,13 +91,11 @@ export default function Footer() {
           <h3 className="text-lg font-semibold mb-3 hover:text-white">
             Contact Us
           </h3>
+          <p className="text-sm hover:text-white">123 Lifeline Street, Dhaka</p>
+          <p className="text-sm mt-2 hover:text-white">📞 +1 (234) 567-8901</p>
           <p className="text-sm hover:text-white">
-            123 Life Saver Street
-            <br />
-            City, State 12345
+            ✉️ support@bloodconnect.com
           </p>
-          <p className="text-sm mt-2 hover:text-white">📞 +1 (234) 567-890</p>
-          <p className="text-sm hover:text-white">✉️ support@bloodbank.org</p>
           <div className="flex space-x-4 mt-4">
             <a href="#" className="text-xl hover:text-[#E41F35]">
               <FaFacebook />

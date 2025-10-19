@@ -25,6 +25,8 @@ import MainDashboardHome from "../Pages/Home/MainDashboardHome";
 import BlogDetails from "../Pages/BlogList/BlogDetails";
 import FundingPage from "../Pages/Funding/FundingPage";
 import Fund from "../Pages/Funding/Fund";
+import AboutUs from "../Pages/AboutUs";
+import ContactUs from "../Pages/Home/ContactUs";
 
 export const router = createBrowserRouter([
   {
@@ -38,6 +40,10 @@ export const router = createBrowserRouter([
       {
         path: "/forbidden",
         element: <ForbiddenPage></ForbiddenPage>,
+      },
+      {
+        path: "/aboutUs",
+        element: <AboutUs></AboutUs>,
       },
       {
         path: "/all-donation-pending",
@@ -58,6 +64,10 @@ export const router = createBrowserRouter([
             <BlogDetails></BlogDetails>
           </PrivateRouter>
         ),
+      },
+      {
+        path: "/contactUs",
+        element: <ContactUs></ContactUs>,
       },
 
       {

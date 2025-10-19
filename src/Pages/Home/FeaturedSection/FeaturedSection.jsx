@@ -41,16 +41,16 @@ export default function FeaturedSection() {
   ];
 
   return (
-    <section className="bg-base-100 py-20">
-      <div className="container mx-auto px-6">
+    <section className="bg-base-100 w-11/12 mx-auto">
+      <div className="mx-auto">
         {/* Heading */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center my-12">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
             How You Can Contribute
           </h2>
-          <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xs md:text-sm text-gray-600 max-w-2xl mx-auto">
             Blood donation is a simple act of kindness that saves lives. Explore
-            the many ways you can help and be part of our life-saving mission.
+            the many ways you can help and be part of our life-saving mission
           </p>
         </div>
 
@@ -59,10 +59,10 @@ export default function FeaturedSection() {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition p-8 text-center border border-gray-100 hover:border-[#E41F35]"
+              className="group bg-gray-100 rounded-xl shadow-sm hover:shadow-lg transition p-8 text-center border border-gray-100 hover:border-[#E41F35]"
             >
               {/* Icon */}
-              <div className="w-16 h-16 flex items-center justify-center mx-auto rounded-full bg-white text-[#E41F35] group-hover:bg-[#E41F35] group-hover:text-white transition-colors duration-600 mb-6 shadow-sm">
+              <div className="w-14 h-14 flex items-center justify-center mx-auto rounded-full bg-white text-[#E41F35] group-hover:bg-[#E41F35] group-hover:text-white transition-colors duration-600 mb-6 shadow-sm">
                 {feature.icon}
               </div>
 

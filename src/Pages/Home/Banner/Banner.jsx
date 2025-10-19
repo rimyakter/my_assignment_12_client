@@ -7,7 +7,7 @@ export default function Banner() {
 
   return (
     <section
-      className="relative bg-cover bg-center bg-no-repeat"
+      className="relative w-11/12 mx-auto bg-cover bg-center bg-no-repeat mt-6 rounded-xl overflow-hidden"
       style={{
         backgroundImage: "url('https://i.ibb.co.com/chpkZkQp/blood.jpg')",
       }}
@@ -16,7 +16,7 @@ export default function Banner() {
       <div className="absolute inset-0 bg-black/85"></div>
 
       {/* Content */}
-      <div className="relative container mx-auto px-6 py-20 flex flex-col items-center text-center text-white">
+      <div className="relative mx-auto px-6 py-20 flex flex-col items-center text-center text-white">
         {/* Heading */}
         <div className="flex">
           <h1 className="text-3xl md:text-5xl font-bold mb-4 ">

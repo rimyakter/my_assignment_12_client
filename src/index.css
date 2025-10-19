@@ -17,10 +17,31 @@ body {
   font-family: "Montserrat", sans-serif;
 }
 
-.navbar .active {
-  color: #e41f35;
-  border-bottom: 2px solid #e41f35;
+/* Smooth underline effect for active NavLink — only for menu links */
+.navbar .menu a {
+  position: relative;
+  transition: color 0.3s ease;
 }
+
+.navbar .menu a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #fff;
+  transition: width 0.3s ease;
+}
+
+.navbar .menu a:hover::after {
+  width: 100%;
+}
+
+.navbar .menu .active::after {
+  width: 100%;
+}
+
 .dashboard-nav .active {
   color: #e41f35;
   font-weight: 700;
