@@ -59,11 +59,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/blogs/:id",
-        element: (
-          <PrivateRouter>
-            <BlogDetails></BlogDetails>
-          </PrivateRouter>
-        ),
+        element: <BlogDetails></BlogDetails>,
       },
       {
         path: "/contactUs",
