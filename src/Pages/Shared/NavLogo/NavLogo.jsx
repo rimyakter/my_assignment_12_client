@@ -7,7 +7,7 @@ const NavLogo = () => {
     <Link to="/">
       <div className="flex">
         <img width={40} src={logo} alt="logo" />
-        <p className="text-white font-bold text-2xl">Blood Bridge</p>
+        <p className="font-bold text-2xl">Blood Bridge</p>
       </div>
     </Link>
   );
