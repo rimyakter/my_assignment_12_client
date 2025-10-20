@@ -142,12 +142,12 @@ const FundsAnalysisCard = () => {
 
   return (
     <div className="bg-white shadow-sm rounded-sm p-4">
-      <h2 className="text-xl md:text-md font-semibold mb-2 text-gray-800 text-center">
+      <h2 className="text-xl md:text-md font-semibold mb-3 text-gray-800 text-center">
         Funds Analysis
       </h2>
 
       {/* Key Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-2 text-center">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3 text-center">
         <div className="p-2 bg-gray-50 rounded-sm">
           <h3 className="text-lg font-bold text-gray-900">
             ${totalFunds.toLocaleString()}

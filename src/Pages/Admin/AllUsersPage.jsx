@@ -13,7 +13,7 @@ const AllUsersPage = () => {
 
   // ✅ Pagination states
   const [currentPage, setCurrentPage] = useState(0);
-  const usersPerPage = 3;
+  const usersPerPage = 5;
 
   // ✅ Fetch users
   const {
@@ -69,8 +69,8 @@ const AllUsersPage = () => {
   if (isError) return <p className="p-6 text-red-500">Failed to load users.</p>;
 
   return (
-    <div className="px-6 py-10">
-      <h1 className="text-2xl font-semibold mb-4">All Users Page</h1>
+    <div className="p-6 pb-10 bg-white shadow-sm rounded-sm mx-4 ">
+      <h1 className="text-xl md:text-2xl font-semibold mb-4">All Users Page</h1>
 
       {/* Filter */}
       <div className="mb-4 flex gap-2">
@@ -91,7 +91,7 @@ const AllUsersPage = () => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-base-200 shadow-md rounded-lg pt-4 pb-6">
+      <div className="overflow-x-auto pt-4 pb-6">
         <table className="table w-full ">
           <thead>
             <tr>

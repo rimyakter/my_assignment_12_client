@@ -4,7 +4,7 @@ import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 import { Link } from "react-router";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 7;
 
 const FundingPage = () => {
   const axiosSecure = useAxiosSecure();
@@ -42,7 +42,7 @@ const FundingPage = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-white shadow-sm rounded-sm mx-4">
       {/* Page Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">All Funding Records</h1>

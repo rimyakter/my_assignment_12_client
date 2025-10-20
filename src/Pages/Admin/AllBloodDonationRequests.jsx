@@ -15,7 +15,7 @@ export default function AllBloodDonationRequests() {
 
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 3; // ✅ adjust as needed
+  const itemsPerPage = 5;
 
   // ✅ Fetch all donation requests
   const {
@@ -98,9 +98,9 @@ export default function AllBloodDonationRequests() {
   }
 
   return (
-    <div className="p-4">
+    <div className="p-6 bg-white shadow-sm mx-4">
       <div className="flex justify-between mb-4">
-        <h2 className="text-xl font-bold">All Blood Donation Requests</h2>
+        <h2 className="text-2xl font-bold">All Blood Donation Requests</h2>
         <select
           className="select select-bordered select-sm"
           value={filter}
