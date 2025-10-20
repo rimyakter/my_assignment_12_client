@@ -66,7 +66,9 @@ export default function ContentManagement() {
     <div className="p-6 space-y-6 bg-white shadow-sm rounded-sm mx-4">
       {/* Header with Add Blog button */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Add and Manage All Blogs</h1>
+        <h1 className="text-xl md:text-2xl font-bold">
+          Add and Manage All Blogs
+        </h1>
         <button
           className="btn btn-primary flex items-center gap-2"
           onClick={() => navigate("/dashboard/content-management/add-blog")}
