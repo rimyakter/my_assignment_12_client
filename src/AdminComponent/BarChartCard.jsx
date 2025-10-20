@@ -22,7 +22,9 @@ ChartJS.register(
 const BarChartCard = ({ title, data, options }) => {
   return (
     <div className="card bg-base-100 shadow-sm rounded-sm p-4">
-      <h2 className="text-md font-semibold mb-4">{title}</h2>
+      <h2 className="text-xl text-center md:text-md font-semibold mb-4">
+        {title}
+      </h2>
       <Bar
         key={title} // important to avoid canvas reuse error
         data={data}

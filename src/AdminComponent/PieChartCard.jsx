@@ -7,7 +7,9 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const PieChartCard = ({ title, data }) => {
   return (
     <div className="card bg-white shadow-sm rounded-sm p-4">
-      <h3 className="text-md font-semibold mb-2">{title}</h3>
+      <h3 className="text-xl text-center md:text-md font-semibold mb-2">
+        {title}
+      </h3>
       <Pie key={title} data={data} />
     </div>
   );

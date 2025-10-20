@@ -1,9 +1,9 @@
-// src/Pages/Admin/AdminHome.jsx
 import { useEffect, useState } from "react";
-import { FaUsers, FaTint, FaDollarSign } from "react-icons/fa"; // ✅ added funds icon
+import { FaUsers, FaTint, FaDollarSign } from "react-icons/fa";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 import useUserRole from "../../hooks/useUserRole";
+import StatsCard from "../../AdminComponent/StatsCard";
 
 const AdminHome = () => {
   const { role } = useUserRole();
@@ -23,13 +23,12 @@ const AdminHome = () => {
         const [usersRes, requestsRes, fundsRes] = await Promise.all([
           axiosSecure.get("/users"),
           axiosSecure.get("/donationRequests"),
-          axiosSecure.get("/funds"), // ✅ fetch funds
+          axiosSecure.get("/funds"),
         ]);
 
         const usersData = Array.isArray(usersRes.data)
           ? usersRes.data
           : usersRes.data?.users || [];
-
         const donorCount = usersData.filter((u) => u.role === "donor").length;
 
         const requestsData = Array.isArray(requestsRes.data)
@@ -38,7 +37,6 @@ const AdminHome = () => {
 
         const fundsData = Array.isArray(fundsRes.data) ? fundsRes.data : [];
 
-        // ✅ Calculate total funds in USD (convert cents → dollars)
         const totalFunds =
           fundsData.reduce((sum, f) => sum + (f.amount || 0), 0) / 100;
 
@@ -80,35 +78,25 @@ const AdminHome = () => {
       </div>
 
       {/* Stats Section */}
-      <div className="grid md:grid-cols-3 gap-6">
-        {/* Total Donors */}
-        <div className="card bg-base-100 shadow-lg border rounded-2xl">
-          <div className="card-body items-center text-center">
-            <FaUsers className="text-5xl text-primary mb-4" />
-            <h2 className="text-3xl font-bold">{stats.totalDonors}</h2>
-            <p className="text-gray-500">Total Donors</p>
-          </div>
-        </div>
-
-        {/* Total Requests */}
-        <div className="card bg-base-100 shadow-lg border rounded-2xl">
-          <div className="card-body items-center text-center">
-            <FaTint className="text-5xl text-red-500 mb-4" />
-            <h2 className="text-3xl font-bold">{stats.totalRequests}</h2>
-            <p className="text-gray-500">Blood Requests</p>
-          </div>
-        </div>
-
-        {/* ✅ Total Funds */}
-        <div className="card bg-base-100 shadow-lg border rounded-2xl">
-          <div className="card-body items-center text-center">
-            <FaDollarSign className="text-5xl text-green-600 mb-4" />
-            <h2 className="text-3xl font-bold">
-              ${stats.totalFunds.toFixed(2)}
-            </h2>
-            <p className="text-gray-500">Total Funds Donated</p>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StatsCard
+          icon={<FaUsers />}
+          title="Total Donors"
+          value={stats.totalDonors}
+          color="text-primary"
+        />
+        <StatsCard
+          icon={<FaTint />}
+          title="Blood Requests"
+          value={stats.totalRequests}
+          color="text-red-500"
+        />
+        <StatsCard
+          icon={<FaDollarSign />}
+          title="Total Funds Donated"
+          value={`$${stats.totalFunds.toFixed(2)}`}
+          color="text-green-600"
+        />
       </div>
     </div>
   );
