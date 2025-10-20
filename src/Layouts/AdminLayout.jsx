@@ -69,30 +69,30 @@ const AdminLayout = () => {
   }
 
   return (
-    <div className="p-4 max-w-7xl mx-auto space-y-8">
+    <div className="p-4 max-w-7xl mx-auto space-y-4 bg-gray-100 rounded-sm">
       {/* ✅ Top Section: Funds Analysis + Live Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Left Column: Funds Analysis */}
         <div className="w-full">
           <FundsAnalysisCard />
         </div>
 
         {/* Right Column: Live Stat Cards */}
-        <div className="flex flex-col justify-between gap-6">
+        <div className="flex flex-col justify-between gap-4">
           <StatsCard
-            icon={<FaUsers className="text-4xl" />}
+            icon={<FaUsers className="text-2xl" />}
             title="Total Donors"
             value={stats.totalDonors}
             color="text-primary"
           />
           <StatsCard
-            icon={<FaTint className="text-4xl" />}
+            icon={<FaTint className="text-2xl" />}
             title="Blood Requests"
             value={stats.totalRequests}
             color="text-red-500"
           />
           <StatsCard
-            icon={<FaDollarSign className="text-4xl" />}
+            icon={<FaDollarSign className="text-2xl" />}
             title="Total Funds"
             value={`$${stats.totalFunds.toFixed(2)}`}
             color="text-green-600"
@@ -101,7 +101,7 @@ const AdminLayout = () => {
       </div>
 
       {/* Middle Section: Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <BarChartCard
           title="Monthly Blood Requests"
           data={{
