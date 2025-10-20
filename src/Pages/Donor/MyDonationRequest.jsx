@@ -15,7 +15,7 @@ export default function MyDonationRequests() {
 
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 4; // number of rows per page
+  const itemsPerPage = 7; // number of rows per page
 
   // Fetch all requests
   const {

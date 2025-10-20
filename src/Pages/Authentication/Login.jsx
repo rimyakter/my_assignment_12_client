@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth";
@@ -9,26 +9,27 @@ const Login = () => {
   const navigate = useNavigate();
   const from = location.state || "/";
   const { login } = useAuth();
+
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm();
+
   const onSubmit = (data) => {
     login(data.email, data.password)
       .then((result) => {
-        const user = result.user;
         Swal.fire({
           position: "top-end",
           icon: "success",
-          title: "You Logged In  Successfully",
+          title: "You Logged In Successfully",
           showConfirmButton: false,
           timer: 1500,
         });
-        //navigate user after use private route
         navigate(from);
       })
-      .catch((error) => {
+      .catch(() => {
         Swal.fire({
           position: "top-end",
           icon: "error",
@@ -38,6 +39,13 @@ const Login = () => {
         });
       });
   };
+
+  // ✅ Autofill admin credentials
+  const fillAdminCredentials = () => {
+    setValue("email", "riad@gmail.com");
+    setValue("password", "123456");
+  };
+
   return (
     <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-xl">
       <div className="card-body">
@@ -46,6 +54,8 @@ const Login = () => {
             <h1 className="text-3xl font-bold mb-6 text-secondary">
               Login Now!
             </h1>
+
+            {/* Email */}
             <label className="label">Email</label>
             <input
               type="email"
@@ -56,6 +66,8 @@ const Login = () => {
             {errors.email?.type === "required" && (
               <p className="text-red-700">Email is required</p>
             )}
+
+            {/* Password */}
             <label className="label">Password</label>
             <input
               type="password"
@@ -71,11 +83,26 @@ const Login = () => {
                 Password must 6 characters or longer
               </p>
             )}
-            <div>
-              <a className="link link-hover">Forgot password?</a>
+
+            {/* Info */}
+            <div className="text-sm text-gray-500">
+              <p>Want to explore as Admin?</p>
             </div>
-            <button className="btn btn-primary mt-4">Login</button>
+
+            {/* Admin Autofill Button */}
+            <div className="my-4">
+              <button
+                type="button"
+                onClick={fillAdminCredentials}
+                className="btn btn-outline btn-sm border-primary text-primary hover:bg-primary hover:text-white"
+              >
+                Autofill Admin Credentials
+              </button>
+            </div>
+
+            <button className="btn btn-primary mt-4 w-full">Login</button>
           </fieldset>
+
           <p className="text-sm my-2">
             Don't have an account?
             <Link
